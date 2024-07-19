@@ -9,7 +9,7 @@
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 </head>
 <body>
-<section layout:fragment="content"><h1>Products List</h1>
+<section layout:fragment="content">
 
 <div class="container mt-5"><h1>Product Management</h1>
   <button onclick="loadProducts()" class="btn btn-primary mb-3">Refresh Products</button>
@@ -49,7 +49,7 @@ function loadProducts() {
   $.ajax({
     url: '/api/products', type: 'GET', success: function (products) {
       let productList = '';
-      $.each(products, function (index, product) {
+      $.each(products_management, function (index, product) {
         productList += `<tr> <td>${product.id}</td> <td>${product.name}</td> <td>${product.price}</td> <td>${product.description}</td> <td> <button onclick="editProduct(${product.id})" class="btn btn-warning">Edit</button> <button onclick="deleteProduct(${product.id})" class="btn btn-danger">Delete</button> </td> </tr>`;
       });
       $('#productList').html(productList);

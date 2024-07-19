@@ -16,11 +16,6 @@ public class ProductApiController {
     private ProductService productService;
 
 
-//    @GetMapping
-//    public String apiview(){
-//        return "redirect:/api/products";
-//    }
-
     @GetMapping
     public List<Product> getAllProducts() {
         return productService.getAllProducts();
