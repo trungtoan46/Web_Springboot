@@ -4,49 +4,351 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout}">
 <head>
     <title th:text="${title} ?: 'Products List'">Products List</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" th:href="@{/swiper/swiper-bundle.min.css}">
+    <link rel="stylesheet" th:href="@{/css/swiper.css}">
+    <link rel="stylesheet" th:href="@{/css/output.css}">
+
+
 </head>
+
 <body>
-<section layout:fragment="content"><h1>Products List</h1>
-    <table class="table table-bordered table-hover">
-        <thead class="table-dark">
-        <tr>
-            <th>ID</th>
-            <th>Name</th>
-            <th>Price</th>
-            <th>Description</th>
-            <th>Category Name</th>
-            <th>Actions</th>
-            <th>Add To Cart</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr th:each="product : ${products}">
-            <td th:text="${product.id}"></td>
-            <td th:text="${product.name}"></td>
-            <td th:text="${product.price}"></td>
-            <td th:text="${product.description}"></td>
-            <td th:text="${product.category.name}"></td>
-            <td> <!-- Hiển thị nút sửa và xóa chỉ dành cho người dùng ADMIN -->
-                <div sec:authorize="hasAuthority('ADMIN')"><a th:href="@{/products/edit/{id}(id=${product.id})}"
-                                                              class="btn btn-success btn-sm">Sửa</a>
-                    <a th:href="@{/products/delete/{id}(id=${product.id})}" class="btn btn-danger btn-sm"
-                       onclick="return confirm('Bạn có chắc không?')">Xóa</a>
+
+<section layout:fragment="content">
+    <style>
+        .swiper{
+            width:100%;
+            height: 657px;
+        }
+
+        .swiper-button-next, .swiper-button-prev {
+            color: #ED553B;
+            background: transparent;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            border: 1px solid #ED553B;
+        }
+        /*  */
+        .swiper-pagination-bullet {
+            width: 13px;
+            height: 13px;
+            text-align: center;
+            line-height: 13px;
+            font-size: 12px;
+            color: #000;
+            opacity: 1;
+            background: rgba(0, 0, 0, 0.2);
+            /* border: 1px solid #ED553B; */
+        }
+
+        .swiper-pagination-bullet-active {
+            color: #fff;
+            background: #ED553B;
+        }
+
+        /*  */
+
+        .swiper-button-next:hover, .swiper-button-prev:hover {
+            /* background: rgba(0, 0, 0, 0.7);      */
+        }
+
+        .swiper-button-next::after, .swiper-button-prev::after {
+            font-size: 20px; /* Adjust the size of the arrow icons */
+        }
+
+        .swiper-horizontal>.swiper-pagination-bullets,
+        .swiper-pagination-bullets.swiper-pagination-horizontal,
+        .swiper-pagination-custom, .swiper-pagination-fraction{
+            top: 460px;
+            left: -310px;
+        }
+
+
+
+        /*  */
+
+        .swiper-pagination{
+            top: 50px;
+        }
+
+        .swiper-container {
+            width: 100%;
+            height: 400px; /* Adjust as needed */
+            background-color: #ED553B;
+
+        }
+        .swiper-slide {
+            text-align: center;
+            font-size: 18px;
+            background: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .swiper-slide img {
+            display: block;
+            width: 40%;
+            height: 60%;
+            object-fit: cover;
+            margin-bottom: 200px;
+        }
+        .swiper-slide span{
+            display: block;
+            width: 40%;
+            height: 50%;
+        }
+        .book-card:hover .add {
+            opacity: 1;
+        }
+    </style>
+
+    <div class="swiper" style="background: linear-gradient(to right, #fbc2eb, #a6c0fe);">
+        <div class="swiper-wrapper !border-t-2">
+            <div class="swiper-slide !bg-gradient-to-r from-pink-100 via-blue-50 to-white "
+                 th:each="product : ${products}">
+                    <span class="p-10" th:text="${product.description}">Description</span>
+                    <img th:src="@{${product.image}}" alt="Product Image" class="">
+            </div>
+        </div>
+        <!-- Pagination -->
+        <div class="swiper-pagination"></div>
+        <!-- Navigation -->
+        <div class="swiper-button-prev"></div>
+        <div class="swiper-button-next"></div>
+    </div>
+
+
+
+
+    <!-- Categories view -->
+    <div class="!container !flex !justify-center !bg-r">
+        <div class="!w-4/5 !p-5 !justify-center">
+            <div class="!block">
+                <header><span class="!text-xs !text-red-400">Categories</span></header>
+            </div>
+            <div>
+                <span>Explore our Top Categories</span>
+            </div>
+            <div class="!flex !justify-center !w-full !space-x-6">
+                <div class="">
+                    <a href="#" class="!flex !flex-col !items-center"><img th:src="@{/img/logor.png}" alt="User Icon" class=" object-cover">
+                        <span class="!text-xs !text-red-400">A</span>
+                    </a></div>
+                <div class="">
+                    <a href="#" class="flex flex-col items-center"><img th:src="@{/img/logor.png}" alt="User Icon" class=" object-cover">
+                        <span class="text-xs text-red-400">A</span>
+                    </a></div>
+                <div class="">
+                    <a href="#" class="flex flex-col items-center"><img th:src="@{/img/logor.png}" alt="User Icon" class=" object-cover">
+                        <span class="text-xs text-red-400">A</span>
+                    </a></div>
+            </div>
+            <div class="flex justify-center relative ml-3 py-8 ">
+                <div class="border-2 border-blue-500 p-4 rounded-md w-48 h-16 flex justify-center items-center">
+                        <a href="#"><span class="text-blue-700 text-xl">VIEW MORE -></span></a>
                 </div>
-            </td>
-            <td> <!-- Nút thêm vào giỏ hàng, hiển thị cho tất cả người dùng đã xác thực -->
-                <form th:action="@{/cart/add}" method="post" sec:authorize="isAuthenticated()">
-                    <input type="number" name="quantity"
-                           min="1" value="1"
-                           class="form-control d-inline-block"
-                           style="width: 70px;">
-                    <input type="hidden" th:value="${product.id}" name="productId"/>
-                    <button type="submit" class="btn btn-warning btn-sm">Thêm Vào Giỏ</button>
-                </form>
-            </td>
-        </tr>
-        </tbody>
-    </table>
+            </div>
+        </div>
+
+    </div>
+    <!-- New books -->
+    <section class="new-release-books w-full py-16 relative" style="background-color: #FCECEC;">
+        <div class="px-4">
+            <div class="text-center mb-12">
+                <span class="text-sm text-gray-500 uppercase tracking-wider">SOME QUALITY ITEMS</span>
+                <h2 class="text-3xl font-bold text-blue-600 mt-2">New Release Books</h2>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+                <div th:each="product: ${products}">
+                    <div class="book-card">
+                        <div class="relative bg-white rounded-lg shadow-md overflow-hidden transition-all duration-300 hover:shadow-xl group">
+                            <div class="relative group">
+                                <a href="#" class="block">
+                                    <div class="h-[432px] overflow-hidden">
+                                        <img th:src="@{${product.image}}" alt="Cover of Simple by Amor" class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105">
+                                    </div>
+                                </a>
+                                <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                    <div class="text-2xl text-center absolute bottom-12 opacity-50 group-hover:opacity-100 h-12 w-80" style="background-color: #ED553B;">
+                                        <a href="" class="block py-2 text-white no-underline text-center pointer-events-auto">ADD TO CART</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="p-6">
+                        <a href="#" class="block text-center">
+                            <h3 class="text-xl font-semibold text-blue-700 hover:text-blue-800 transition-colors duration-300" th:text="${product.description}"></h3>
+                        </a>
+                        <p class="text-sm text-center text-gray-500 mt-2" th:text="${product.author != '' ? product.author : 'unknown'}">Amor</p>
+                        <p class="text-lg text-center text-red-500 font-bold mt-3" th:text="${product.price}">$ 40.00</p>
+                    </div>
+                </div>
+            </div>
+            <div class="view-all-product flex w-full justify-end p-16">
+                <div class="flex justify-center">
+                    <a href="" class="text-base text-red-500 font-bold flex items-center gap-2">
+                        <p>View All Products</p>
+                        <svg width="14" height="10" viewBox="0 0 14 10" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M10.0662 0L9.24158 0.856675L11.7499 3.40467H0V4.59533H11.7499L9.24217 7.14392L10.0662 8L14 4L10.0662 0Z" fill="#ED553B"/>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!--    End new books-->
+
+
+    <!-- Featured Book Section -->
+    <section class="featured-book overflow-x-hidden bg-[#ED553B]">
+        <div class="container mx-auto">
+            <div class="featured-book-swiper relative" style="width: 100%; height: 700px;">
+                <div class="swiper-wrapper relative">
+                    <!-- Slide 1 -->
+                    <div class="swiper-slide" th:each="product: ${products}" style="background: linear-gradient(to right, #FBEEEE 0%, #F7FFFE 100%); overflow: hidden;">
+                        <div class="flex justify-center w-4/5 mt-2">
+                            <div class="w-full flex justify-center relative">
+                                <img th:src="@{${product.image}}" alt="Featured Book" class="object-cover w-full h-full shadow-lg">
+                            </div>
+                            <div class="relative right-40 " style="height: 600px;">
+                                <div class="text-left">
+                                    <h2 class="text-3xl font-bold text-indigo-800 mb-10 w-full text-nowrap">Featured Book</h2>
+                                    <div class="w-20 h-0.5 bg-red-500 mb-1"></div>
+                                    <p class="text-gray-400 uppercase mb-6" th:text="${product.name}">BY AUTHOR NAME</p>
+                                    <p class="text-gray-500 mb-10 overflow-ellipsis line-clamp-2" th:text="${product.description}">Book description here.</p>
+                                    <p class="text-2xl font-bold text-red-500 mb-12" th:text="${'$' + product.price}">$ 45.00</p>
+                                    <button class="bg-white text-indigo-700 py-2 px-4 rounded-md inline-flex items-center border border-indigo-900">
+                                        VIEW MORE
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Navigation buttons -->
+                <div class="featured-book-button-prev absolute top-1/2 left-10 w-12 h-12 -mt-6 z-10 cursor-pointer flex items-center justify-center text-white bg-[#ED553B] rounded-full">
+                </div>
+                <div class="featured-book-button-next absolute top-1/2 right-10 w-12 h-12 -mt-6 z-10 cursor-pointer flex items-center justify-center text-white bg-[#ED553B] rounded-full">
+                </div>
+                <!-- Pagination -->
+                <div class="featured-book-pagination absolute text-center bottom-24 w-full z-10"></div>
+            </div>
+        </div>
+    </section>
+
+<!--        End Featured Book-->
+
+        <!--    Top seller-->
+
+    <section class="top-seller bg-white overflow-x-hidden">
+        <div><p class="text-xl p-8">Top Sellers</p></div>
+        <div class="container mx-auto px-4">
+            <div class="top-seller-swiper relative">
+                <div class="swiper-wrapper" >
+                    <div class="swiper-slide" th:each="product : ${products}">
+                        <div class="slide-content">
+                            <div class="image-content">
+                                <img th:src="@{${product.image}}">
+                            </div>
+                            <div class="text-content">
+                                <h2 class="book-title" th:text="${product.name}">Title</h2>
+                                <p class="book-description overflow-ellipsis line-clamp-2"
+                                th:text="${product.description}"
+                                >
+                                </p>
+                                <div class="price-container">
+                                    <span class="current-price" th:text="${product.price}">$ 27.89</span>
+                                </div>
+                                <button class="add-to-basket text-center mt-10">
+                                    <span class="cart-icon "><svg width="22" height="24" viewBox="0 0 22 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M1 1.5H3.22222L3.66667 3.83333M5.44444 13.1667H16.5556L21 3.83333H3.66667M5.44444 13.1667L3.66667 3.83333M5.44444 13.1667L2.89679 15.8417C2.19682 16.5767 2.69257 17.8333 3.68246 17.8333H16.5556M16.5556 17.8333C15.3283 17.8333 14.3333 18.878 14.3333 20.1667C14.3333 21.4553 15.3283 22.5 16.5556 22.5C17.7829 22.5 18.7778 21.4553 18.7778 20.1667C18.7778 18.878 17.7829 17.8333 16.5556 17.8333ZM7.66667 20.1667C7.66667 21.4553 6.67174 22.5 5.44444 22.5C4.21715 22.5 3.22222 21.4553 3.22222 20.1667C3.22222 18.878 4.21715 17.8333 5.44444 17.8333C6.67174 17.8333 7.66667 18.878 7.66667 20.1667Z" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                        </svg>
+                                    </span>
+                                    <p class="text-white">Add to basket</p>
+                                </button>
+                            </div>
+
+
+                        </div>
+                    </div>
+                </div>
+                <!-- End wrapper -->
+
+                <div class="top-seller-button-next">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <mask id="mask0_5_73" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="0" y="0" width="24" height="24">
+                            <rect width="24" height="24" fill="#D9D9D9"/>
+                        </mask>
+                        <g mask="url(#mask0_5_73)">
+                            <path d="M8.0875 22.2273L5.97275 20.1125L14.0852 12L5.97275 3.8875L8.0875 1.77275L18.3148 12L8.0875 22.2273Z" fill="#1C1B1F"/>
+                        </g>
+                    </svg>
+
+                </div>
+                <!-- <div class="top-seller-pagination"></div> -->
+            </div>
+        </div>
+    </section>
+
+
+
+    <script th:src="@{/swiper/swiper-bundle.min.js}"></script>
+
+    <script>
+        const swiper = new Swiper('.swiper', {
+            direction: 'horizontal',
+            loop: true,
+            pagination: {
+                el: '.swiper-pagination',
+            },
+            navigation: {
+                nextEl: '.swiper-button-next',
+                prevEl: '.swiper-button-prev',
+            },
+            scrollbar: {
+                el: '.swiper-scrollbar',
+            },
+        });
+
+        const featuredBookSwiper = new Swiper('.featured-book-swiper', {
+            direction:'horizontal',
+            loop:true,
+            pagination:{
+                el:'.featured-book-pagination',
+                clickable:true,
+            },
+            navigation:{
+                nextEl:'.featured-book-button-next',
+                prevEl:'.featured-book-button-prev',
+            },
+        });
+
+        const topSellerSwiper = new Swiper('.top-seller-swiper', {
+            direction: 'horizontal',
+            loop: true,
+            slidesPerView: 3,
+            spaceBetween: 30,
+            pagination: {
+                el: '.top-seller-pagination',
+                clickable: true,
+            },
+            navigation: {
+                nextEl: '.top-seller-button-next',
+                prevEl: '.top-seller-button-prev',
+            },
+        });
+    </script>
 </section>
+
+
 </body>
 </html>

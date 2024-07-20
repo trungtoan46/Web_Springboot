@@ -1,0 +1,311 @@
+
+
+
+
+
+
+.swiper-slide{
+    background: #ccc;
+    display:flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 60px;
+}
+/* .swiper-horizontal .swiper-pagination-bullets,
+.swiper-pagination-bullets.swiper-pagination-horizontal,
+.swiper-pagination-custom,
+.swiper-pagination-fraction {
+    bottom: var(--swiper-pagination-bottom, 20px);
+    left: -500px;
+} */
+/* .swiper-pagination-bullet {
+  width: 12px;
+  height: 12px;
+  text-align: center;
+  line-height: 20px;
+  font-size: 12px;
+  color: #fff;
+  opacity: 1;
+  background: slategray;
+} */
+
+.swiper-pagination-bullet-active {
+    color: #fff;
+    background: sandybrown;
+}
+
+
+
+.featured-book-swiper {
+    width: 100%;
+    height: 700px;
+    /* overflow: hidden;  */
+
+}
+
+.featured-book-swiper .swiper-slide {
+    background: linear-gradient(to right, #FBEEEE 0%, #F7FFFE 100%);
+    overflow: hidden;
+}
+
+.featured-book-button-next,
+.featured-book-button-prev {
+    position: absolute;
+    top: 50%;
+    width: 50px;
+    height: 50px;
+    margin-top: -25px;
+    z-index: 10;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    background: #ED553B;
+    border-radius: 50%;
+}
+
+.featured-book-button-next {
+    right: 10px;
+}
+
+.featured-book-button-prev {
+    left: 10px;
+}
+
+.featured-book-button-next:after,
+.featured-book-button-prev:after {
+    font-family: swiper-icons;
+    font-size: 20px;
+    text-transform: none !important;
+    letter-spacing: 0;
+    font-variant: initial;
+    line-height: 1;
+}
+
+.featured-book-button-prev:after {
+    content: 'prev';
+}
+
+.featured-book-button-next:after {
+    content: 'next';
+}
+
+.featured-book-pagination {
+    position: absolute;
+    text-align: center;
+    transition: 300ms opacity;
+    transform: translate3d(0, 0, 0);
+    z-index: 10;
+    left: auto !important;
+    right: auto !important;
+    top: auto !important;
+    bottom: 100px !important;
+    width: 100% !important;
+}
+
+.featured-book-pagination .swiper-pagination-bullet {
+    width: 8px;
+    height: 8px;
+    display: inline-block;
+    border-radius: 50%;
+    background: #7f0606;
+    opacity: 0.2;
+    margin: 0 4px;
+}
+
+.featured-book-pagination .swiper-pagination-bullet-active {
+    opacity: 1;
+    background: #ED553B;
+}
+
+
+/* Top */
+/* Top Sellers Section Styles */
+.top-seller {
+    background-color: white;
+    overflow-x: hidden;
+}
+
+.top-seller-swiper {
+    position: relative;
+    padding: 20px 0;
+    width: 125%;
+}
+
+/* Navigation Buttons */
+.top-seller-button-next,
+.top-seller-button-prev {
+    position: absolute;
+    top: 33%;
+    width: 40px;
+    height: 40px;
+    margin-top: -20px;
+    z-index: 10;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #000000;
+    background: #fff;
+    border-radius: 50%;
+    font-size: 18px;
+    transition: background-color 0.3s ease;
+}
+
+.top-seller-button-next {
+    right: 350px;
+}
+
+.top-seller-button-prev {
+    left: 10px;
+}
+
+
+/* TOP SELLERS */
+
+.top-seller-button-next:hover,
+.top-seller-button-prev:hover {
+    background-color: #dad3d2;
+}
+
+/* Slide Content */
+.slide-content {
+    display: flex;
+    align-items: flex-start;
+    padding: 1rem;
+}
+
+.image-content {
+    flex: 0 0 40%;
+    margin-right: 20px;
+}
+
+.image-content img {
+    width: 100% !important;
+    height: auto !important;
+    object-fit: cover;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.text-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.book-title {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.book-description {
+    font-size: 0.9rem;
+    color: #666;
+    margin-bottom: 15px;
+    overflow: hidden !important;
+    display: -webkit-box !important;
+    -webkit-box-orient: vertical !important;
+    -webkit-line-clamp: 2 !important;
+}
+
+.price-container {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.current-price {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #333;
+    margin-right: 10px;
+}
+
+.original-price {
+    font-size: 1rem;
+    color: #999;
+    text-decoration: line-through;
+}
+
+.add-to-basket {
+    background-color: #ffc107;
+    color: #ffffff;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    transition: background-color 0.3s;
+}
+
+.add-to-basket:hover {
+    background-color: #ffa000;
+}
+
+.cart-icon {
+    margin-right: 10px;
+    width: 1.25rem !important;
+}
+
+.top-seller-button-prev:after {
+}
+
+.top-seller-button-next:after {
+}
+
+
+.swiper-slide:last-child .text-content {
+    display: none;
+}
+
+
+
+
+.footer-img{
+    background-image: url(/resource/img/logo.png);
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+    height: 90px;
+    width: 90px;
+
+}
+
+.social{
+
+    background-image: url(/resource/static/img/icon_social.png);
+    background-size: auto;
+    background-position: center;
+    background-repeat: no-repeat;
+    height: 45px;
+    width: 366px;
+}
+
+.footer-title{
+    font-weight: 700;
+    color: #ED553B;
+    font-size: 24px;
+}
+
+
+/* Footer */
+
+/* <svg width="89" height="158" viewBox="0 0 89 158" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g opacity="0.3">
+<rect x="25.5854" y="142.585" width="15.4146" height="15.4146" fill="#F4F4F4"/>
+<rect x="25.5854" y="95.0571" width="15.4146" height="15.4146" fill="#F4F4F4"/>
+<rect x="25.5854" y="47.5283" width="15.4146" height="15.4146" fill="#F4F4F4"/>
+<rect x="25.5854" width="15.4146" height="15.4146" fill="#F1AD28"/>
+<rect x="73.1138" y="142.585" width="15.4146" height="15.4146" fill="#F4F4F4"/>
+<rect x="73.1138" y="95.0571" width="15.4146" height="15.4146" fill="#F4F4F4"/>
+<rect x="73.1138" y="47.5283" width="15.4146" height="15.4146" fill="#ED553B"/>
+<rect x="73.1138" width="15.4146" height="15.4146" fill="#F4F4F4"/>
+</g>
+</svg>
+ */
