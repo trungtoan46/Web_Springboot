@@ -6,7 +6,8 @@
 </head>
 <body>
 <section layout:fragment="content" class="container mt-5"><h1>Add New Product</h1>
-    <form th:action="@{/products/add}" th:object="${product}" method="post" class="needs-validation" novalidate>
+    <form th:action="@{/products/add}" th:object="${product}" method="post"
+          enctype="multipart/form-data"          class="needs-validation" novalidate>
         <div class="mb-3">
             <label for="name" class="form-label">Name:</label>
             <input type="text" th:field="*{name}" class="form-control" id="name" required>
@@ -23,8 +24,18 @@
         </div>
         <div class="mb-3">
             <label for="description" class="form-label">Description:</label>
-            <textarea th:field="*{description}" class="form-control" id="description" required></textarea>
+            <textarea th:field="*{description}" class="form-control" id="description" required maxlength="1000"></textarea>        </div>
+<!--            image-->
+        <div class="mb-3">
+            <label for="image" class="form-label">IMG link:</label>
+            <input type="url" name="image" id="image" class="form-control" placeholder="Nhập URL của ảnh">
         </div>
+<!--        -->
+        <div class="mb-3">
+            <label for="author" class="form-label">Author:</label>
+            <input type="text" th:field="*{author}" class="form-control" id="author" required>
+        </div>
+
         <button type="submit" class="btn btn-primary">Add Product</button>
         <a th:href="@{/products}" class="btn btn-link">Cancel</a></form>
 </section>

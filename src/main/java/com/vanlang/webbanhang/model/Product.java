@@ -15,12 +15,23 @@ public class Product {
     private Long id;
     private String name;
     private double price;
+    @Column(columnDefinition = "TEXT")
     private String description;
 
     @ManyToOne
     @JoinColumn(name = "category_id")
     private Category category;
+    @Column
     private String image;
+
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
+    }
+
     private String author;
 
     public String getAuthor() {
@@ -32,13 +43,7 @@ public class Product {
     }
 
 
-    public String getImage() {
-        return image;
-    }
 
-    public void setImage(String image) {
-        this.image = image;
-    }
 
 
     public Long getId() {

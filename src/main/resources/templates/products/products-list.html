@@ -107,11 +107,11 @@
     </style>
 
     <div class="swiper" style="background: linear-gradient(to right, #fbc2eb, #a6c0fe);">
-        <div class="swiper-wrapper !border-t-2">
-            <div class="swiper-slide !bg-gradient-to-r from-pink-100 via-blue-50 to-white "
+        <div class="swiper-wrapper !border-t-2 relative">
+            <div class="swiper-slide !bg-gradient-to-r from-pink-100 via-blue-50 to-white"
                  th:each="product : ${products}">
-                    <span class="p-10" th:text="${product.description}">Description</span>
-                    <img th:src="@{${product.image}}" alt="Product Image" class="">
+                <span class="line-clamp-1 overflow-hidden" th:text="${product.description}">Description</span>
+                <img th:src="${product.image}" alt="Product Image" class="block relative">
             </div>
         </div>
         <!-- Pagination -->
@@ -131,20 +131,21 @@
                 <header><span class="!text-xs !text-red-400">Categories</span></header>
             </div>
             <div>
-                <span>Explore our Top Categories</span>
+                <span class="mb-6">Explore our Top Categories</span>
             </div>
-            <div class="!flex !justify-center !w-full !space-x-6">
+            <div class="!flex !justify-center !w-full !space-x-6 mt-6">
                 <div class="">
-                    <a href="#" class="!flex !flex-col !items-center"><img th:src="@{/img/logor.png}" alt="User Icon" class=" object-cover">
-                        <span class="!text-xs !text-red-400">A</span>
+                    <a href="#" class="!flex !flex-col !items-center"><img th:src="@{/img/trinhtham.jpg}" alt="User Icon" class="rounded-3xl w-80 h-40 object-cover">
+
+                        <span class="!text-2xl !text-red-400">Trinh Thám</span>
                     </a></div>
                 <div class="">
-                    <a href="#" class="flex flex-col items-center"><img th:src="@{/img/logor.png}" alt="User Icon" class=" object-cover">
-                        <span class="text-xs text-red-400">A</span>
+                    <a href="#" class="flex flex-col items-center"><img th:src="@{/img/tieuthuyet.jpg}" alt="User Icon" class="rounded-3xl w-80 h-40 object-cover">
+                        <span class="text-2xl text-red-400">Tiểu Thuyết</span>
                     </a></div>
                 <div class="">
-                    <a href="#" class="flex flex-col items-center"><img th:src="@{/img/logor.png}" alt="User Icon" class=" object-cover">
-                        <span class="text-xs text-red-400">A</span>
+                    <a href="#" class="flex flex-col items-center"><img th:src="@{/img/edu.jpg}" alt="User Icon" class="rounded-3xl w-80 h-40 object-cover">
+                        <span class="text-2xl text-red-400">Giáo Dục</span>
                     </a></div>
             </div>
             <div class="flex justify-center relative ml-3 py-8 ">
@@ -163,13 +164,13 @@
                 <h2 class="text-3xl font-bold text-blue-600 mt-2">New Release Books</h2>
             </div>
             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
-                <div th:each="product: ${products}">
+                <div th:each="product, iterStat : ${products}" th:if="${iterStat.index < 4}">
                     <div class="book-card">
                         <div class="relative bg-white rounded-lg shadow-md overflow-hidden transition-all duration-300 hover:shadow-xl group">
                             <div class="relative group">
                                 <a href="#" class="block">
                                     <div class="h-[432px] overflow-hidden">
-                                        <img th:src="@{${product.image}}" alt="Cover of Simple by Amor" class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105">
+                                        <img th:src="${product.image}" alt="Cover of Simple by Amor" class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105">
                                     </div>
                                 </a>
                                 <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
@@ -183,10 +184,10 @@
 
                     <div class="p-6">
                         <a href="#" class="block text-center">
-                            <h3 class="text-xl font-semibold text-blue-700 hover:text-blue-800 transition-colors duration-300" th:text="${product.description}"></h3>
+                            <h3 class="text-xl font-semibold text-blue-700 hover:text-blue-800 transition-colors duration-300" th:text="${product.name}"></h3>
                         </a>
                         <p class="text-sm text-center text-gray-500 mt-2" th:text="${product.author != '' ? product.author : 'unknown'}">Amor</p>
-                        <p class="text-lg text-center text-red-500 font-bold mt-3" th:text="${product.price}">$ 40.00</p>
+                        <p class="text-lg text-center text-red-500 font-bold mt-3" th:text="${product.price+'   '+'VND'}">$ 40.00</p>
                     </div>
                 </div>
             </div>
@@ -214,15 +215,15 @@
                     <div class="swiper-slide" th:each="product: ${products}" style="background: linear-gradient(to right, #FBEEEE 0%, #F7FFFE 100%); overflow: hidden;">
                         <div class="flex justify-center w-4/5 mt-2">
                             <div class="w-full flex justify-center relative">
-                                <img th:src="@{${product.image}}" alt="Featured Book" class="object-cover w-full h-full shadow-lg">
+                                <img th:src="${product.image}" alt="Featured Book" class="object-cover w-full h-full shadow-lg">
                             </div>
                             <div class="relative right-40 " style="height: 600px;">
                                 <div class="text-left">
                                     <h2 class="text-3xl font-bold text-indigo-800 mb-10 w-full text-nowrap">Featured Book</h2>
                                     <div class="w-20 h-0.5 bg-red-500 mb-1"></div>
                                     <p class="text-gray-400 uppercase mb-6" th:text="${product.name}">BY AUTHOR NAME</p>
-                                    <p class="text-gray-500 mb-10 overflow-ellipsis line-clamp-2" th:text="${product.description}">Book description here.</p>
-                                    <p class="text-2xl font-bold text-red-500 mb-12" th:text="${'$' + product.price}">$ 45.00</p>
+                                    <p class="text-gray-500 mb-10 overflow-ellipsis line-clamp-2 max-w-[210px]" th:text="${product.description}">Book description here.</p>
+                                    <p class="text-2xl font-bold text-red-500 mb-12" th:text="${product.price +'  '+ 'VND'}"></p>
                                     <button class="bg-white text-indigo-700 py-2 px-4 rounded-md inline-flex items-center border border-indigo-900">
                                         VIEW MORE
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -257,16 +258,15 @@
                     <div class="swiper-slide" th:each="product : ${products}">
                         <div class="slide-content">
                             <div class="image-content">
-                                <img th:src="@{${product.image}}">
-                            </div>
+                                <img th:src="${product.image}" alt="Product Image">                            </div>
                             <div class="text-content">
-                                <h2 class="book-title" th:text="${product.name}">Title</h2>
+                                <h2 class="book-title line-clamp-1" th:text="${product.name}">Title</h2>
                                 <p class="book-description overflow-ellipsis line-clamp-2"
                                 th:text="${product.description}"
                                 >
                                 </p>
-                                <div class="price-container">
-                                    <span class="current-price" th:text="${product.price}">$ 27.89</span>
+                                <div class="price-container w-full">
+                                    <span class="current-price !w-full" th:text="${product.price +'   '+'VND'}"></span>
                                 </div>
                                 <button class="add-to-basket text-center mt-10">
                                     <span class="cart-icon "><svg width="22" height="24" viewBox="0 0 22 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -276,8 +276,6 @@
                                     <p class="text-white">Add to basket</p>
                                 </button>
                             </div>
-
-
                         </div>
                     </div>
                 </div>
@@ -346,6 +344,42 @@
                 prevEl: '.top-seller-button-prev',
             },
         });
+        function saveProduct() {
+            // Create a new FormData object
+            const formData = new FormData();
+            formData.append('id', $('#productId').val());
+            formData.append('name', $('#name').val());
+            formData.append('price', $('#price').val());
+            formData.append('description', $('#description').val());
+            formData.append('author', $('#author').val());
+
+            // Append the image file if present
+            const imageFile = $('#image')[0].files[0];
+            if (imageFile) {
+                formData.append('image', imageFile);
+            }
+
+            // Determine API URL and type
+            const apiUrl = $('#productId').val() ? `/api/products/${$('#productId').val()}` : '/api/products';
+            const apiType = $('#productId').val() ? 'PUT' : 'POST';
+
+            $.ajax({
+                url: apiUrl,
+                type: apiType,
+                data: formData,
+                processData: false,  // Prevent jQuery from automatically transforming the data into a query string
+                contentType: false,  // Let the browser set the content type (including boundary)
+                success: function () {
+                    resetForm();  // Reset the form fields after successful save
+                    loadProducts();  // Reload the products list to reflect changes
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error saving product:', error);
+                    alert('An error occurred while saving the product.');
+                }
+            });
+        }
+
     </script>
 </section>
 
