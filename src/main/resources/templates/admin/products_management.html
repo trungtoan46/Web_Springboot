@@ -37,7 +37,8 @@
     <button type="submit" class="btn btn-success">Save Product</button>
   </form>
 </div>
-<script> $(document).ready(function () {
+<script>
+  $(document).ready(function () {
   loadProducts();
   $("#productForm").on('submit', function (e) {
     e.preventDefault();
@@ -49,8 +50,20 @@ function loadProducts() {
   $.ajax({
     url: '/api/products', type: 'GET', success: function (products) {
       let productList = '';
-      $.each(products_management, function (index, product) {
-        productList += `<tr> <td>${product.id}</td> <td>${product.name}</td> <td>${product.price}</td> <td>${product.description}</td> <td> <button onclick="editProduct(${product.id})" class="btn btn-warning">Edit</button> <button onclick="deleteProduct(${product.id})" class="btn btn-danger">Delete</button> </td> </tr>`;
+      $.each(products, function (index, product) {
+        productList += `<tr>
+        <td>${product.id}</td>
+        <td>${product.name}</td>
+        <td>${product.price}</td>
+        <td>${product.description}</td>
+        <td>${product.author}</td>
+        <td>${product.image}</td>
+
+        <td>
+        <button onclick="editProduct(${product.id})" class="btn btn-warning">Edit</button>
+        <button onclick="deleteProduct(${product.id})" class="btn btn-danger">Delete</button>
+        </td>
+        </tr>`;
       });
       $('#productList').html(productList);
     }
@@ -62,7 +75,10 @@ function saveProduct() {
     id: $('#productId').val(),
     name: $('#name').val(),
     price: $('#price').val(),
-    description: $('#description').val()
+    description: $('#description').val(),
+    author: $('#author').val(),
+    image: $('#image').val()
+
   };
   const apiUrl = productData.id ? `/api/products/${productData.id}` : '/api/products';
   const apiType = productData.id ? 'PUT' : 'POST';
@@ -85,6 +101,9 @@ function editProduct(id) {
       $('#name').val(product.name);
       $('#price').val(product.price);
       $('#description').val(product.description);
+      $('#author').val(product.author);
+      $('#image').val(product.image);
+
     }
   });
 }
@@ -104,6 +123,9 @@ function resetForm() {
   $('#name').val('');
   $('#price').val('');
   $('#description').val('');
+  $('#author').val('');
+  $('#image').val('');
+
 } </script>
 </section>
 </body>

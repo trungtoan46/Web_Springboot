@@ -23,6 +23,11 @@ public class ProductService {
     public Optional<Product> getProductById(Long id) {
         return productRepository.findById(id);
     }
+
+    public List<ProductService> getProductByName(String name) {
+        return productRepository.findByName(name);
+    }
+
     // Add a new product to the database
     public Product addProduct(Product product) {
         return productRepository.save(product);
@@ -34,6 +39,9 @@ public class ProductService {
         existingProduct.setPrice(product.getPrice());
         existingProduct.setDescription(product.getDescription());
         existingProduct.setCategory(product.getCategory());
+        existingProduct.setAuthor(product.getAuthor());
+        existingProduct.setImage(product.getImage());
+
         return productRepository.save(existingProduct);
     }
     // Delete a product by its id
