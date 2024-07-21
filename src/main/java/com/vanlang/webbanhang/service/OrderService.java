@@ -51,7 +51,7 @@ public class OrderService {
             orderDetailRepository.save(detail);
         }
         // Optionally clear the cart after order placement
-        cartService.clearCard();
+        cartService.clearCart();
         return order;
     }
 

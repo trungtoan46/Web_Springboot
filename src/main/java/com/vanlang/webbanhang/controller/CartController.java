@@ -17,26 +17,23 @@ public class CartController {
         model.addAttribute("cartItems", cartService.getCartItems());
         return "/cart/cart";
     }
+
     @PostMapping("/add")
     public String addToCart(@RequestParam Long productId,
-                            @RequestParam int quantity
-//                            ,@RequestParam String address,
-//                            @RequestParam String email,
-//                            @RequestParam String note,
-//                            @RequestParam String phoneNumber,
-//                            @RequestParam String payment
-    ) {
+                            @RequestParam int quantity) {
         cartService.addToCart(productId, quantity);
         return "redirect:/cart";
     }
+
     @GetMapping("/remove/{productId}")
     public String removeFromCart(@PathVariable Long productId) {
         cartService.removeFromCart(productId);
         return "redirect:/cart";
     }
+
     @GetMapping("/clear")
     public String clearCart() {
-        cartService.clearCard();
+        cartService.clearCart();
         return "redirect:/cart";
     }
 }
