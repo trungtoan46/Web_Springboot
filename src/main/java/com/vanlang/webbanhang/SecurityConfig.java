@@ -45,7 +45,7 @@ public class SecurityConfig {
         logger.info("Configuring security filter chain");
         return http
                 .csrf(csrf -> csrf
-                        .ignoringRequestMatchers("/api/**") // Tắt CSRF cho API
+                        .ignoringRequestMatchers("/api/**","/products/edit/**") // Tắt CSRF cho API
                 )
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/css/**", "/js/**", "/", "/oauth/**", "/register",

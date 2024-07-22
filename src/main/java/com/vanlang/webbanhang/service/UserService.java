@@ -73,6 +73,16 @@ public class UserService implements UserDetailsService {
         return userRepository.findByPhone(phone);
     }
 
+
+
+    public User getUserById(Long id) {
+        return userRepository.findById(String.valueOf(id)).orElseThrow(() -> new RuntimeException("User not found"));
+    }
+
+    public void updateUser(User user) {
+        userRepository.save(user);
+    }
+
     public List<User> getAllUsers() {
         return userRepository.findAll();
     }

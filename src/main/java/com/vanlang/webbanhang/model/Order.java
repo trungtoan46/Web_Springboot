@@ -5,6 +5,7 @@ import lombok.Data;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "orders")
@@ -25,6 +26,11 @@ public class Order {
     private double total;
     private String status;
     private LocalDate confirmationDate;
+
+
+    @OneToMany(mappedBy = "order")
+    private List<OrderDetail> orderDetails;
+
 
     // getters and setters
 

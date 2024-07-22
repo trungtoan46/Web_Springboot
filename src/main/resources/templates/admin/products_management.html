@@ -53,6 +53,12 @@
       <input type="text" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="author">
     </div>
     <div class="mb-4">
+      <label for="category" class="block text-gray-700 text-sm font-bold mb-2">Category:</label>
+      <select id="category" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
+        <!-- Options will be populated by JavaScript -->
+      </select>
+    </div>
+    <div class="mb-4">
       <label for="image" class="block text-gray-700 text-sm font-bold mb-2">Image URL:</label>
       <input type="text" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="image">
     </div>
@@ -72,6 +78,7 @@
       });
 
       loadProducts();
+      loadCategories();
       $("#productForm").on('submit', function (e) {
         e.preventDefault();
         saveProduct();
@@ -143,7 +150,23 @@
         }
       });
     }
-
+    function loadCategories() {
+      $.ajax({
+        url: '/api/products/categories', // Endpoint to get categories
+        type: 'GET',
+        success: function(response) {
+          let categoryOptions = '';
+          $.each(response, function(index, category) {
+            categoryOptions += `<option value="${category.id}">${category.name}</option>`;
+          });
+          $('#category').html(categoryOptions);
+        },
+        error: function(xhr, status, error) {
+          console.error("Error loading categories:", error);
+          alert("Failed to load categories. Please try again.");
+        }
+      });
+    }
     function saveProduct() {
       const productData = {
         id: $('#productId').val(),
@@ -151,6 +174,7 @@
         price: $('#price').val(),
         description: $('#description').val(),
         author: $('#author').val(),
+        category: $('#category').val(),
         image: $('#image').val()
       };
       console.log("Attempting to save product:", productData);
@@ -219,6 +243,7 @@
       $('#price').val('');
       $('#description').val('');
       $('#author').val('');
+      $('#category').val('');
       $('#image').val('');
     }
   </script>
