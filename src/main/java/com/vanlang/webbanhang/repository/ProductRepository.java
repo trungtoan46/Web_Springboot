@@ -22,4 +22,9 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 
     @Query("SELECT DISTINCT p.author FROM Product p WHERE p.author IS NOT NULL AND p.author <> ''")
     List<String> findAllDistinctAuthors();
+
+//    Page<Product> findAllByIsFeatured(boolean isFeatured, Pageable pageable);
+
+
+
 }

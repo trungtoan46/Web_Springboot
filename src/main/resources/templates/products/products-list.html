@@ -187,7 +187,7 @@
                             <h3 class="text-xl font-semibold text-blue-700 hover:text-blue-800 transition-colors duration-300" th:text="${product.name}"></h3>
                         </a>
                         <p class="text-sm text-center text-gray-500 mt-2" th:text="${product.author != '' ? product.author : 'unknown'}">Amor</p>
-                        <p class="text-lg text-center text-red-500 font-bold mt-3" th:text="${product.price+'   '+'VND'}">$ 40.00</p>
+                        <p class="text-lg text-center text-red-500 font-bold mt-3" th:text="${@priceFormatter.formatPrice(product.price)} + ' VND'">$ 40.00</p>
                     </div>
                 </div>
             </div>
@@ -223,7 +223,7 @@
                                     <div class="w-20 h-0.5 bg-red-500 mb-1"></div>
                                     <p class="text-gray-400 uppercase mb-6" th:text="${product.name}">BY AUTHOR NAME</p>
                                     <p class="text-gray-500 mb-10 overflow-ellipsis line-clamp-2 max-w-[210px]" th:text="${product.description}">Book description here.</p>
-                                    <p class="text-2xl font-bold text-red-500 mb-12" th:text="${product.price +'  '+ 'VND'}"></p>
+                                    <p class="text-2xl font-bold text-red-500 mb-12" th:text="${@priceFormatter.formatPrice(product.price)} + ' VND'"></p>
                                     <button class="bg-white text-indigo-700 py-2 px-4 rounded-md inline-flex items-center border border-indigo-900">
                                         VIEW MORE
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -266,7 +266,7 @@
                                 >
                                 </p>
                                 <div class="price-container w-full">
-                                    <span class="current-price !w-full" th:text="${product.price +'   '+'VND'}"></span>
+                                    <span class="current-price !w-full" th:text="${@priceFormatter.formatPrice(product.price)} + ' VND'"></span>
                                 </div>
                                 <button class="add-to-basket text-center mt-10">
                                     <span class="cart-icon "><svg width="22" height="24" viewBox="0 0 22 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -345,7 +345,6 @@
             },
         });
         function saveProduct() {
-            // Create a new FormData object
             const formData = new FormData();
             formData.append('id', $('#productId').val());
             formData.append('name', $('#name').val());
@@ -353,13 +352,8 @@
             formData.append('description', $('#description').val());
             formData.append('author', $('#author').val());
 
-            // Append the image file if present
-            const imageFile = $('#image')[0].files[0];
-            if (imageFile) {
-                formData.append('image', imageFile);
-            }
 
-            // Determine API URL and type
+
             const apiUrl = $('#productId').val() ? `/api/products/${$('#productId').val()}` : '/api/products';
             const apiType = $('#productId').val() ? 'PUT' : 'POST';
 
@@ -367,11 +361,11 @@
                 url: apiUrl,
                 type: apiType,
                 data: formData,
-                processData: false,  // Prevent jQuery from automatically transforming the data into a query string
-                contentType: false,  // Let the browser set the content type (including boundary)
+                processData: false,
+                contentType: false,
                 success: function () {
-                    resetForm();  // Reset the form fields after successful save
-                    loadProducts();  // Reload the products list to reflect changes
+                    resetForm();
+                    loadProducts();
                 },
                 error: function (xhr, status, error) {
                     console.error('Error saving product:', error);

@@ -3,6 +3,8 @@ package com.vanlang.webbanhang;
 import com.vanlang.webbanhang.service.UserService;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -36,18 +38,25 @@ public class SecurityConfig {
         auth.setPasswordEncoder(passwordEncoder()); // Thiết lập cơ chế mã hóa mật khẩu.
         return auth; // Trả về nhà cung cấp xác thực.
     }
+    private static final Logger logger = LoggerFactory.getLogger(SecurityConfig.class);
 
     @Bean
     public SecurityFilterChain securityFilterChain(@NotNull HttpSecurity http) throws Exception {
+        logger.info("Configuring security filter chain");
         return http
+                .csrf(csrf -> csrf
+                        .ignoringRequestMatchers("/api/**") // Tắt CSRF cho API
+                )
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/css/**", "/js/**", "/", "/oauth/**", "/register", "/error", "/products", "/cart", "/cart/**","/api/**","/p")
+                        .requestMatchers("/css/**", "/js/**", "/", "/oauth/**", "/register",
+                                "/error", "/products", "/cart/**", "/cart/**","/api/**","/p","/img/**","/login")
                         .permitAll() // Cho phép truy cập không cần xác thực.
-                        .requestMatchers("/products/edit/**", "/products/add", "/products/delete","/admin/**")
+                        .requestMatchers("/products/add", "/products/delete")
                         .hasAnyAuthority("ADMIN") // Chỉ cho phép ADMIN truy cập.
-                        .requestMatchers("/api/**")
+                        .requestMatchers("/api/**","/api/user/current")
                         .permitAll() // API mở cho mọi người dùng.
                         .anyRequest().authenticated() // Bất kỳ yêu cầu nào khác cần xác thực.
+
                 )
                 .logout(logout -> logout
                         .logoutUrl("/logout")
@@ -60,7 +69,7 @@ public class SecurityConfig {
                 .formLogin(formLogin -> formLogin
                         .loginPage("/login") // Trang đăng nhập.
                         .loginProcessingUrl("/login") // URL xử lý đăng nhập.
-                        .defaultSuccessUrl("/products") // Trang sau đăng nhập thành công.
+                        .defaultSuccessUrl("/products",true) // Trang sau đăng nhập thành công.
                         .failureUrl("/login?error") // Trang đăng nhập thất bại.
                         .permitAll()
                 )
@@ -71,7 +80,7 @@ public class SecurityConfig {
                         .userDetailsService(userDetailsService())
                 )
                 .exceptionHandling(exceptionHandling -> exceptionHandling
-                        .accessDeniedPage("/403") // Trang báo lỗi khi truy cập không được phép.
+                        .accessDeniedPage("/404") // Trang báo lỗi khi truy cập không được phép.
                 )
                 .sessionManagement(sessionManagement -> sessionManagement
                         .maximumSessions(1) // Giới hạn số phiên đăng nhập.

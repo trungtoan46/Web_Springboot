@@ -4,10 +4,15 @@ import com.vanlang.webbanhang.model.Product;
 import com.vanlang.webbanhang.service.CategoryService;
 import com.vanlang.webbanhang.service.ProductService;
 import jakarta.validation.Valid;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -23,42 +28,23 @@ public class ProductController {
     @Autowired
     private ProductService productService;
     @Autowired
-    private CategoryService categoryService;// Đảm bảo bạn đã inject CategoryService
-    // Display a list of all products
-    @GetMapping
-    public String showProducts(@RequestParam(required = false) String sortBy,
-                               @RequestParam(required = false) Double minPrice,
-                               @RequestParam(required = false) Double maxPrice,
-                               @RequestParam(required = false) String author,
-                               @RequestParam(required = false) String category,
-                               @RequestParam(defaultValue = "0") int page,
-                               @RequestParam(defaultValue = "10") int size,
-                               Model model) {
-        Page<Product> productPage;
-        List<String> authors = productService.getAllDistinctAuthors();
-        if (minPrice != null && maxPrice != null) {
-            productPage = productService.getProductsByPriceRange(minPrice, maxPrice, PageRequest.of(page, size));
-        } else if (author != null && !author.isEmpty()) {
-            productPage = productService.getProductsByAuthor(author, PageRequest.of(page, size));
-        } else if (sortBy != null) {
-            productPage = productService.getAllProductsSorted(sortBy, PageRequest.of(page, size));
-        } else if (category != null && !category.isEmpty()) {
-            productPage = productService.getProductsByCategory(category, PageRequest.of(page, size));
-        }
-        else {
-            productPage = productService.getAllProducts(PageRequest.of(page, size));
-        }
+    private CategoryService categoryService;
+    private static final Logger logger = LoggerFactory.getLogger(ProductController.class);
+
+    @GetMapping()
+
+    public String  Home(Model model,@RequestParam(defaultValue = "0") int page,
+                        @RequestParam(defaultValue = "9") int size){
+        Pageable pageable = PageRequest.of(page, size);
+        Page<Product> productPage = productService.getAllProducts(pageable);
         model.addAttribute("products", productPage.getContent());
-        model.addAttribute("currentPage", productPage.getNumber());
-        model.addAttribute("totalPages", productPage.getTotalPages());
-        model.addAttribute("totalItems", productPage.getTotalElements());
-
-        model.addAttribute("authors",authors);
-        model.addAttribute("selectedAuthor", author);
         model.addAttribute("categories", categoryService.getAllCategories());
-        model.addAttribute("selectedCategory", category);
+        model.addAttribute("totalProducts", productService.getTotalProductCount());
+        model.addAttribute("totalPages", productPage.getTotalPages());
+        model.addAttribute("currentPage", page);
+        model.addAttribute("size", size);
 
-        return "/products/products-list";
+        return "products/products-listing";
     }
     @GetMapping("/authors")
     public List<String> getAuthors() {
@@ -83,26 +69,58 @@ public class ProductController {
         return "redirect:/products";
     }
     // For editing a product
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @GetMapping("/edit/{id}")
     public String showEditForm(@PathVariable("id") Long id, Model model) {
-        Product product = productService.getProductById(id);
-        model.addAttribute("product", product);
-        model.addAttribute("categories",categoryService.getAllCategories());//Load categories
-        return "/products/edit-product";
-    }
-    // Process the form for updating a product
-    @PostMapping("/update/{id}")
-    public String updateProduct(@PathVariable("id") Long id, @Valid Product product, BindingResult bindingResult) {
-        if(bindingResult.hasErrors()){
-            product.setId(id);//// set id to keep it in the form in case of errors
-            return "edit-product";
+        logger.info("Attempting to show edit form for product with id: {}", id);
+        try {
+            Product product = productService.getProductById(id);
+            if (product == null) {
+                logger.warn("Product with id {} not found", id);
+                return "redirect:/products";
+            }
+            model.addAttribute("product", product);
+            model.addAttribute("categories", categoryService.getAllCategories());
+            logger.info("Edit form loaded for product id: {}", id);
+            return "products/edit-product";
+        } catch (Exception e) {
+            logger.error("Error occurred while loading edit form for product id: {}", id, e);
+            throw e; // Re-throw to see the full stack trace
         }
-        productService.updateProduct(product);
-        return "redirect:/products";
+    }
+
+
+    // Process the form for updating a product
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PostMapping("/update/{id}")
+    public String updateProduct(@PathVariable("id") Long id,
+                                @Valid @ModelAttribute("product") Product product,
+                                BindingResult bindingResult,
+                                Authentication authentication,
+                                Model model) {
+        logger.info("Attempting to update product with id: {}", id);
+        logger.info("User authorities: {}", authentication.getAuthorities());
+        if (bindingResult.hasErrors()) {
+            logger.warn("Validation errors occurred while updating product id: {}", id);
+            model.addAttribute("categories", categoryService.getAllCategories());
+            return "products/edit-product";
+        }
+
+        try {
+            productService.updateProduct(product);
+            logger.info("Successfully updated product with id: {}", id);
+            return "redirect:/products";
+        } catch (Exception e) {
+            logger.error("Error updating product with id: {}. Error: {}", id, e.getMessage(), e);
+            model.addAttribute("errorMessage", "Failed to update product: " + e.getMessage());
+            model.addAttribute("categories", categoryService.getAllCategories());
+            return "products/edit-product";
+        }
     }
 
     // Handle request to delete a product
-    @GetMapping("/delete/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    @PostMapping("/delete/{id}")
     public String deleteProduct(@PathVariable("id") Long id) {
         productService.deleteProductById(id);
         return "redirect:/products";

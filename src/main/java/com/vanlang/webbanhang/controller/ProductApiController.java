@@ -8,12 +8,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.util.List;
 
 @CrossOrigin
@@ -33,60 +30,44 @@ public class ProductApiController {
     }
 
     @PostMapping
-    public ResponseEntity<?> createProduct(@RequestParam("image") MultipartFile image,
-                                           @RequestParam("name") String name,
-                                           @RequestParam("price") Double price,
-                                           @RequestParam("description") String description,
-                                           @RequestParam("author") String author,
-                                           @RequestParam("categoryId") Long categoryId) throws IOException {
-        Product product = new Product();
-        product.setName(name);
-        product.setPrice(price);
-        product.setDescription(description);
-        product.setAuthor(author);
-
-        Category category = categoryService.getCategoryById(categoryId)
-                .orElseThrow(() -> new RuntimeException("Category not found with id: " + categoryId));
+    public ResponseEntity<?> createProduct(@RequestBody Product product) {
+        Category category = categoryService.getCategoryById(product.getCategory().getId())
+                .orElseThrow(() -> new RuntimeException("Category not found with id: " + product.getCategory().getId()));
         product.setCategory(category);
-
-
 
         Product savedProduct = productService.addProduct(product);
         return ResponseEntity.ok(savedProduct);
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<Product> getProductById(@PathVariable Long id) {
-        Product product = productService.getProductById(id);
-        return ResponseEntity.ok().body(product);
+    @PutMapping("/{id}")
+    public ResponseEntity<?> updateProduct(@PathVariable Long id, @RequestBody Product product) {
+        try {
+            product.setId(id);
+            productService.updateProduct(product);
+            return ResponseEntity.ok(product);
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<?> updateProduct(@PathVariable Long id,
-                                           @RequestParam("name") String name,
-                                           @RequestParam("price") Double price,
-                                           @RequestParam("description") String description,
-                                           @RequestParam("author") String author,
-                                           @RequestParam("categoryId") Long categoryId) throws IOException {
-        Product product = productService.getProductById(id);
-        product.setName(name);
-        product.setPrice(price);
-        product.setDescription(description);
-        product.setAuthor(author);
-
-        Category category = categoryService.getCategoryById(categoryId)
-                .orElseThrow(() -> new RuntimeException("Category not found with id: " + categoryId));
-        product.setCategory(category);
-
-        Product updatedProduct = productService.updateProduct(product);
-        return ResponseEntity.ok(updatedProduct);
+    @GetMapping("/{id}")
+    public ResponseEntity<Product> getProductById(@PathVariable Long id) {
+        try {
+            Product product = productService.getProductById(id);
+            return ResponseEntity.ok().body(product);
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteProduct(@PathVariable Long id) {
-        Product product = productService.getProductById(id);
-        productService.deleteProductById(id);
-        return ResponseEntity.ok().build();
+        try {
+            productService.deleteProductById(id);
+            return ResponseEntity.ok().build();
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @GetMapping("/authors")
@@ -104,5 +85,4 @@ public class ProductApiController {
         List<String> images = productService.getAllDistinctImages();
         return ResponseEntity.ok(images);
     }
-
 }

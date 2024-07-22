@@ -51,7 +51,7 @@ public class CategoryService {
     }
 
 
-
-
-
+    public long getTotalCategoryCount() {
+        return categoryRepository.count();
+    }
 }

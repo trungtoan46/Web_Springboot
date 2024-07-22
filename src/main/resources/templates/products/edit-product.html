@@ -1,51 +1,60 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{layout}">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout}">
 <head>
-    <title>Update Product</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <title>Edit Product</title>
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body>
-<section layout:fragment="content" class="container mt-5">
-    <h1 class="font-bold text-3xl mb-3">Edit Product</h1>
+<section layout:fragment="content" class="container mx-auto px-4 py-8">
+    <h1 class="text-3xl font-bold mb-6">Edit Product</h1>
     <form th:action="@{/products/update/{id}(id=${product.id})}" th:object="${product}" method="post"
-          class="needs-validation" novalidate enctype="multipart/form-data">
-        <div class="mb-3">
-            <label for="name" class="form-label">Name:</label>
-            <input type="text" th:field="*{name}" class="form-control" id="name" required maxlength="255">
-            <div class="text-danger" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></div>
+          class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+        <input type="hidden" th:field="*{id}" />
+        <div class="mb-4">
+            <label for="name" class="block text-gray-700 text-sm font-bold mb-2">Name:</label>
+            <input type="text" th:field="*{name}" id="name" required
+                   class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" />
         </div>
-        <div class="mb-3">
-            <label for="price" class="form-label">Price:</label>
-            <input type="text" th:field="*{price}" class="form-control" id="price" required>
+        <div class="mb-4">
+            <label for="price" class="block text-gray-700 text-sm font-bold mb-2">Price:</label>
+            <input type="number" th:field="*{price}" id="price" required
+                   class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" />
         </div>
-        <div class="mb-3">
-            <label for="category" class="form-label">Category:</label>
-            <select th:field="*{category}" class="form-control" id="category">
-                <option th:each="category : ${categories}" th:value="${category.id}" th:text="${category.name}"
-                        th:selected="${category.id == product.category.id}"></option>
+        <div class="mb-4">
+            <label for="description" class="block text-gray-700 text-sm font-bold mb-2">Description:</label>
+            <textarea th:field="*{description}" id="description"
+                      class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"></textarea>
+        </div>
+        <div class="mb-4">
+            <label for="category" class="block text-gray-700 text-sm font-bold mb-2">Category:</label>
+            <select th:field="*{category}" id="category"
+                    class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                <option th:each="category : ${categories}"
+                        th:value="${category.id}"
+                        th:text="${category.name}"></option>
             </select>
         </div>
-        <div class="mb-3">
-            <label for="description" class="form-label">Description:</label>
-            <textarea th:field="*{description}" class="form-control" id="description" required></textarea>
+        <div class="mb-4">
+            <label for="author" class="block text-gray-700 text-sm font-bold mb-2">Author:</label>
+            <input type="text" th:field="*{author}" id="author"
+                   class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" />
         </div>
-        <div class="mb-3">
-            <label for="author" class="form-label">Author:</label>
-            <textarea th:field="*{author}" class="form-control" id="author" required></textarea>
+        <div class="mb-4">
+            <label for="image" class="block text-gray-700 text-sm font-bold mb-2">Image URL:</label>
+            <input type="text" th:field="*{image}" id="image"
+                   class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" />
         </div>
-        <div class="mb-3">
-            <label for="image" class="form-label">IMG link:</label>
-            <input type="url" name="image" id="image" class="form-control" placeholder="Nhập URL của ảnh">
+        <div class="flex items-center justify-between">
+            <button type="submit"
+                    class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                Update Product
+            </button>
+            <a th:href="@{/products}" class="inline-block align-baseline font-bold text-sm text-blue-500 hover:text-blue-800">
+                Cancel
+            </a>
         </div>
-        <div class="mb-3" th:if="${product.image != null and !product.image.isEmpty()}">
-            <label>Current Image:</label>
-            <img th:src="${product.image}" alt="Current Product Image" class="img-thumbnail"/>
-        </div>
-        <button type="submit" class="btn btn-primary">Save Changes</button>
-        <a th:href="@{/products}" class="btn btn-link">Cancel</a>
     </form>
 </section>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
