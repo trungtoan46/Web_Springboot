@@ -4,18 +4,13 @@ import com.vanlang.webbanhang.model.OrderDetail;
 import com.vanlang.webbanhang.model.Product;
 import com.vanlang.webbanhang.repository.OrderDetailRepository;
 import com.vanlang.webbanhang.repository.ProductRepository;
-import groovyjarjarantlr4.v4.runtime.tree.pattern.ParseTreePattern;
-import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.NoSuchElementException;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -28,6 +23,7 @@ public class ProductService {
     public Page<Product> getAllProducts(Pageable pageable) {
         return productRepository.findAll(pageable);
     }
+
     public List<Product> getAllProducts() {
         return productRepository.findAll();
     }
@@ -43,7 +39,7 @@ public class ProductService {
 
     public void updateProduct(Product product) {
         Product existingProduct = productRepository.findById(product.getId())
-                .orElseThrow(() -> new RuntimeException("Product not found"));
+                .orElseThrow(() -> new NoSuchElementException("Product not found"));
 
         existingProduct.setName(product.getName());
         existingProduct.setPrice(product.getPrice());
@@ -92,26 +88,21 @@ public class ProductService {
         return productRepository.findAllDistinctAuthors();
     }
 
-
-
     public long getTotalProductCount() {
         return productRepository.count();
     }
 
     public List<Product> getTopSellerProducts() {
-        // Tính tổng số lượng đơn hàng cho mỗi sản phẩm
         List<OrderDetail> orderDetails = orderDetailRepository.findAll();
         Map<Product, Integer> productOrderCount = new HashMap<>();
 
         for (OrderDetail orderDetail : orderDetails) {
             Product product = orderDetail.getProduct();
-            productOrderCount.put(product, productOrderCount.getOrDefault(product, 0) + orderDetail.getQuantity());
+            productOrderCount.merge(product, orderDetail.getQuantity(), Integer::sum);
         }
 
-        // Sắp xếp sản phẩm theo số lượng đơn hàng giảm dần
-        return productOrderCount.entrySet()
-                .stream()
-                .sorted((e1, e2) -> e2.getValue().compareTo(e1.getValue()))
+        return productOrderCount.entrySet().stream()
+                .sorted(Map.Entry.<Product, Integer>comparingByValue().reversed())
                 .map(Map.Entry::getKey)
                 .collect(Collectors.toList());
     }
@@ -119,6 +110,4 @@ public class ProductService {
     public List<Product> getRecentlyAddedProducts() {
         return productRepository.findTop5ByOrderByCreatedAtDesc();
     }
-
-
 }
