@@ -38,17 +38,24 @@ public class UserController {
     }
 
     @PostMapping("/register")
-    public String register(@Valid @ModelAttribute("user") User user, // Validate đối tượng User
-                           @NotNull BindingResult bindingResult, // Kết quả của quá trình validate
+    public String register(@Valid @ModelAttribute("user") User user,
+                           @NotNull BindingResult bindingResult,
                            Model model) {
-        if (bindingResult.hasErrors()) { // Kiểm tra nếu có lỗi validate
-            var errors = bindingResult.getAllErrors().stream().map(DefaultMessageSourceResolvable::getDefaultMessage).toArray(String[]::new);
+        if (bindingResult.hasErrors()) {
+            var errors = bindingResult.getAllErrors().stream()
+                    .map(DefaultMessageSourceResolvable::getDefaultMessage)
+                    .toArray(String[]::new);
             model.addAttribute("errors", errors);
-            return "users/register"; // Trả về lại view "register" nếu có lỗi
+            return "users/register";
         }
-        userService.save(user); // Lưu người dùng vào cơ sở dữ liệu
-        userService.setDefaultRole(user.getUsername()); // Gán vai trò mặc định cho người dùng
-        return "redirect:/login"; // Chuyển hướng người dùng tới trang "login"
+        try {
+            userService.save(user);
+            userService.setDefaultRole(user.getUsername());
+            return "redirect:/login";
+        } catch (Exception e) {
+            model.addAttribute("error", "An error occurred while registering: " + e.getMessage());
+            return "users/register";
+        }
     }
     @PostMapping("/login")
     public String loginafter(){
