@@ -18,7 +18,7 @@ public class HelloController{
 
     private ProductService productService;
     private CategoryService categoryService;
-    @GetMapping()
+    @GetMapping("/")
     public String showProducts(@RequestParam(required = false) String sortBy,
                                @RequestParam(required = false) Double minPrice,
                                @RequestParam(required = false) Double maxPrice,
