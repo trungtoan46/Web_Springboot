@@ -71,10 +71,10 @@ public class SecurityConfig {
         logger.info("Configuring security filter chain");
         return http
                 .csrf(csrf -> csrf
-                        .ignoringRequestMatchers("/api/**","/products/edit/**","/admin/users/edit/**","admin/order/**","/cart/**")
+                        .ignoringRequestMatchers("/api/**","/products/edit/**","/admin/users/edit/**","admin/order/**","/cart/**","/home","/**")
                 )
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/css/**", "/js/**", "/", "/oauth/**", "/register",
+                        .requestMatchers("/css/**", "/js/**", "/","/**", "/oauth/**", "/register",
                                 "/error", "/products", "/cart/**", "/cart/**","/api/**","/p","/img/**","/login","/home")
                         .permitAll()
                         .requestMatchers("/products/add", "/products/delete")
