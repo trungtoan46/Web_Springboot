@@ -32,17 +32,42 @@ public class ProductController {
     private static final Logger logger = LoggerFactory.getLogger(ProductController.class);
 
     @GetMapping()
+    public String Home(Model model,
+                       @RequestParam(defaultValue = "0") int page,
+                       @RequestParam(defaultValue = "9") int size,
+                       @RequestParam(required = false) String sortBy,
+                       @RequestParam(required = false) String category,
+                       @RequestParam(required = false) String author,
+                       @RequestParam(required = false) Double minPrice,
+                       @RequestParam(required = false) Double maxPrice) {
 
-    public String  Home(Model model,@RequestParam(defaultValue = "0") int page,
-                        @RequestParam(defaultValue = "9") int size){
         Pageable pageable = PageRequest.of(page, size);
-        Page<Product> productPage = productService.getAllProducts(pageable);
+        Page<Product> productPage;
+
+        if (category != null && !category.isEmpty()) {
+            productPage = productService.getProductsByCategory(category, pageable);
+        } else if (author != null && !author.isEmpty()) {
+            productPage = productService.getProductsByAuthor(author, pageable);
+        } else if (minPrice != null && maxPrice != null) {
+            productPage = productService.getProductsByPriceRange(minPrice, maxPrice, pageable);
+        } else if (sortBy != null && !sortBy.isEmpty()) {
+            productPage = productService.getAllProductsSorted(sortBy, pageable);
+        } else {
+            productPage = productService.getAllProducts(pageable);
+        }
+
         model.addAttribute("products", productPage.getContent());
         model.addAttribute("categories", categoryService.getAllCategories());
+        model.addAttribute("authors", productService.getAllDistinctAuthors());
         model.addAttribute("totalProducts", productService.getTotalProductCount());
         model.addAttribute("totalPages", productPage.getTotalPages());
         model.addAttribute("currentPage", page);
         model.addAttribute("size", size);
+        model.addAttribute("sortBy", sortBy);
+        model.addAttribute("category", category);
+        model.addAttribute("author", author);
+        model.addAttribute("minPrice", minPrice);
+        model.addAttribute("maxPrice", maxPrice);
 
         return "products/products-listing";
     }
@@ -51,14 +76,17 @@ public class ProductController {
         return productService.getAllDistinctAuthors();
     }
 
-    // For adding a new product
+
+
     @GetMapping("/add")
     public String showAddForm(Model model) {
         model.addAttribute("product", new Product());
         model.addAttribute("categories",categoryService.getAllCategories());// Load categories
         return "/products/add-product";
     }
-    // Process the form for adding a new product
+
+
+
     @PostMapping("/add")
     public String addProduct(@Valid Product product, BindingResult bindingResult)
                               {
@@ -85,7 +113,7 @@ public class ProductController {
             return "products/edit-product";
         } catch (Exception e) {
             logger.error("Error occurred while loading edit form for product id: {}", id, e);
-            throw e; // Re-throw to see the full stack trace
+            throw e;
         }
     }
 
@@ -118,7 +146,6 @@ public class ProductController {
         }
     }
 
-    // Handle request to delete a product
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/delete/{id}")
     public String deleteProduct(@PathVariable("id") Long id) {

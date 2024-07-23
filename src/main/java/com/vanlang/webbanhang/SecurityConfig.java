@@ -14,6 +14,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 
 @Configuration // Đánh dấu lớp này là một lớp cấu hình cho Spring Context.
 @EnableWebSecurity // Kích hoạt tính năng bảo mật web của Spring Security.
@@ -45,8 +46,8 @@ public class SecurityConfig {
         logger.info("Configuring security filter chain");
         return http
                 .csrf(csrf -> csrf
-                        .ignoringRequestMatchers("/api/**","/products/edit/**") // Tắt CSRF cho API
-                )
+                        .ignoringRequestMatchers("/api/**","/products/edit/**","/admin/users/edit/**","admin/order/**","/cart/**")
+                        )
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/css/**", "/js/**", "/", "/oauth/**", "/register",
                                 "/error", "/products", "/cart/**", "/cart/**","/api/**","/p","/img/**","/login")

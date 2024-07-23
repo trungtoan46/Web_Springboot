@@ -4,55 +4,62 @@
 <head>
     <title>Edit User</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <meta name="_csrf" th:content="${_csrf.token}"/>
-    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
 </head>
 <body class="bg-gray-100">
 <section layout:fragment="content" class="container mx-auto px-4 py-8">
     <h1 class="text-3xl font-bold mb-6">Edit User</h1>
-    <form th:action="@{/admin/users/update}" method="post" class="bg-white shadow-md rounded-lg overflow-hidden">
-        <input type="hidden" name="id" th:value="${user.id}"/>
-        <div class="px-6 py-4">
-            <div class="mb-4">
-                <label for="username" class="block text-gray-700">Username</label>
-                <input type="text" id="username" name="username" th:value="${user.username}" required
-                       class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50"/>
-            </div>
-            <div class="mb-4">
-                <label for="email" class="block text-gray-700">Email</label>
-                <input type="email" id="email" name="email" th:value="${user.email}" required
-                       class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50"/>
-            </div>
-            <div class="mb-4">
-                <label for="phone" class="block text-gray-700">Phone</label>
-                <input type="text" id="phone" name="phone" th:value="${user.phone}" required
-                       class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50"/>
-            </div>
-            <div class="mb-4">
-                <label for="provider" class="block text-gray-700">Provider</label>
-                <input type="text" id="provider" name="provider" th:value="${user.provider}"
-                       class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50"/>
-            </div>
-            <div class="mb-4">
-                <label for="roles" class="block text-gray-700">Roles</label>
-                <select id="roles" name="roles" multiple
-                        class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50">
-                    <option th:each="role : ${roles}" th:value="${role.id}"
-                            th:text="${role.name}" th:selected="${#lists.contains(user.roles, role)}"></option>
-                </select>
-            </div>
+
+    <!-- Display error messages -->
+    <div th:if="${error != null}" class="bg-red-200 text-red-700 px-4 py-2 rounded mb-4">
+        <p th:text="${error}"></p>
+    </div>
+
+    <!-- Display success messages -->
+    <div th:if="${success != null}" class="bg-green-200 text-green-700 px-4 py-2 rounded mb-4">
+        <p th:text="${success}"></p>
+    </div>
+
+    <!-- User Edit Form -->
+    <form th:action="@{/admin/users/update}" th:object="${user}" method="post" class="bg-white shadow-md rounded-lg p-6">
+        <input type="hidden" th:field="*{id}" />
+
+        <div class="mb-4">
+            <label for="username" class="block text-gray-700 text-sm font-bold mb-2">Username:</label>
+            <input type="text" id="username" th:field="*{username}"
+                   class="form-input mt-1 block w-full border rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" />
+            <span th:if="${#fields.hasErrors('username')}" th:errors="*{username}" class="text-red-500 text-sm"></span>
         </div>
-        <div class="px-6 py-4 border-t border-gray-200">
-            <button type="submit"
-                    class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-                Save Changes
-            </button>
-            <a th:href="@{/admin/users}" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded ml-4">
-                Cancel
-            </a>
+
+        <div class="mb-4">
+            <label for="email" class="block text-gray-700 text-sm font-bold mb-2">Email:</label>
+            <input type="email" id="email" th:field="*{email}"
+                   class="form-input mt-1 block w-full border rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" />
+            <span th:if="${#fields.hasErrors('email')}" th:errors="*{email}" class="text-red-500 text-sm"></span>
         </div>
+
+        <div class="mb-4">
+            <label for="password" class="block text-gray-700 text-sm font-bold mb-2">Password:</label>
+            <input type="password" id="password" th:field="*{password}"
+                   class="form-input mt-1 block w-full border rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500" />
+            <span th:if="${#fields.hasErrors('password')}" th:errors="*{password}" class="text-red-500 text-sm"></span>
+        </div>
+
+        <div class="mb-4">
+            <label for="roles" class="block text-gray-700 text-sm font-bold mb-2">Roles:</label>
+            <select id="roles" th:field="*{roles}" multiple="multiple"
+                    class="form-select mt-1 block w-full border rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+                <option th:each="role : ${roles}"
+                        th:value="${role.id}"
+                        th:text="${role.name}"
+                        th:selected="${user.roles.contains(role)}"></option>
+            </select>
+            <span th:if="${#fields.hasErrors('roles')}" th:errors="*{roles}" class="text-red-500 text-sm"></span>
+        </div>
+
+        <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Update</button>
     </form>
+
+    <a href="/admin/users" class="block mt-4 text-blue-500 hover:text-blue-700">Back to User List</a>
 </section>
 </body>
 </html>

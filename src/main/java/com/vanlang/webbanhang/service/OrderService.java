@@ -12,9 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -44,9 +42,9 @@ public class OrderService {
         order.setCustomerPayment(customerPayment);
         order.setOrderDate(LocalDateTime.now());
         order.setStatus("PENDING");
-        order = orderRepository.save(order);
 
         double total = 0;
+        List<OrderDetail> orderDetails = new ArrayList<>();
         for (CartItem item : cartItems) {
             OrderDetail detail = new OrderDetail();
             detail.setOrder(order);
@@ -54,10 +52,14 @@ public class OrderService {
             detail.setQuantity(item.getQuantity());
             detail.setPrice(item.getProduct().getPrice());
             total += detail.getQuantity() * detail.getPrice();
-            orderDetailRepository.save(detail);
+            orderDetails.add(detail);
         }
+
         order.setTotal(total);
         orderRepository.save(order);
+
+        orderDetailRepository.saveAll(orderDetails);
+
 
         cartService.clearCart();
         return order;
@@ -71,13 +73,16 @@ public class OrderService {
         return orderRepository.findTop10ByOrderByOrderDateDesc();
     }
 
+    @Transactional
     public boolean confirmOrder(Long orderId) {
-        Order order = orderRepository.findById(orderId).orElse(null);
-        if (order != null && order.getStatus().equals("PENDING")) {
-            order.setStatus("CONFIRMED");
-            order.setConfirmationDate(LocalDate.now());
-            orderRepository.save(order);
-            return true;
+        Optional<Order> optionalOrder = orderRepository.findById(orderId);
+        if (optionalOrder.isPresent()) {
+            Order order = optionalOrder.get();
+            if ("PENDING".equals(order.getStatus())) {
+                order.setStatus("CONFIRMED");
+                orderRepository.save(order);
+                return true;
+            }
         }
         return false;
     }
@@ -102,5 +107,9 @@ public class OrderService {
 
     public Order getOrderById(Long id) {
         return orderRepository.findById(id).orElseThrow(() -> new RuntimeException("Order not found"));
+    }
+
+    public Order save(Order order) {
+        return orderRepository.save(order);
     }
 }

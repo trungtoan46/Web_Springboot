@@ -16,6 +16,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -31,7 +32,10 @@ public class AdminController {
     private UserService userService;
     @Autowired
     private OrderService orderService;
-
+    @Autowired
+    public AdminController(UserService userService) {
+        this.userService = userService;
+    }
     @GetMapping()
     public String adminDashboard(Model model) {
         model.addAttribute("users", userService.getAllUsers());
@@ -62,9 +66,19 @@ public class AdminController {
 
     @PostMapping("/orders/{orderId}/confirm")
     @ResponseBody
-    public ResponseEntity<Map<String, Boolean>> confirmOrder(@PathVariable Long orderId) {
-        boolean success = orderService.confirmOrder(orderId);
-        return ResponseEntity.ok(Map.of("success", success));
+    public ResponseEntity<Map<String, Object>> confirmOrder(@PathVariable Long orderId) {
+        Map<String, Object> response = new HashMap<>();
+        try {
+            boolean success = orderService.confirmOrder(orderId);
+            response.put("success", success);
+            if (!success) {
+                response.put("message", "Order not found or already confirmed");
+            }
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("message", e.getMessage());
+        }
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/sales-data")

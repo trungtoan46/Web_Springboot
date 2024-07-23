@@ -27,7 +27,6 @@ public class Order {
     private String status;
     private LocalDate confirmationDate;
 
-
     @OneToMany(mappedBy = "order")
     private List<OrderDetail> orderDetails;
 
@@ -120,5 +119,14 @@ public class Order {
 
     public void setConfirmationDate(LocalDate confirmationDate) {
         this.confirmationDate = confirmationDate;
+    }
+
+
+    public List<OrderDetail> getOrderDetails() {
+        return orderDetails;
+    }
+
+    public void setOrderDetails(List<OrderDetail> orderDetails) {
+        this.orderDetails = orderDetails;
     }
 }

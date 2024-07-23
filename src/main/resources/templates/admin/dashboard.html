@@ -4,6 +4,9 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout}">
 <head>
     <meta charset="UTF-8">
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+
     <title>DashBoard</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
@@ -17,7 +20,7 @@
                 <h2 class="text-xl font-bold">Dashboard</h2>
             </div>
             <nav>
-                <a href="#" class="flex items-center p-4 hover:bg-purple-100">
+                <a href="/admin/users" class="flex items-center p-4 hover:bg-purple-100">
                     <span class="ml-4">Users</span>
                 </a>
                 <a href="/categories" class="flex items-center p-4 hover:bg-purple-100">
@@ -95,7 +98,7 @@
                     <tr th:each="order : ${recentOrders}" class="border-t">
                         <td class="p-2" th:text="${order.id}"></td>
                         <td class="p-2" th:text="${order.customerName}"></td>
-                        <td class="p-2" th:text="${#numbers.formatDecimal(order.total, 0, 'COMMA', 2, 'POINT')}"></td>
+                            <td class="p-2" th:text="${#numbers.formatDecimal(order.total, 0, 'COMMA', 2, 'POINT')}"></td>
                         <td class="p-2" th:text="${#temporals.format(order.orderDate, 'dd-MM-yyyy HH:mm')}"></td>
                         <td class="p-2" th:text="${order.status}"></td>
                         <td class="p-2">
@@ -121,41 +124,52 @@
     </div>
 
 
+
     <script th:inline="javascript">
-        // Sales Chart
-        var ctx = document.getElementById('salesChart').getContext('2d');
-        var salesData = /*[[${salesData}]]*/ [];
-        var chart = new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: salesData.map(item => item.date),
-                datasets: [{
-                    label: 'Sales',
-                    data: salesData.map(item => item.amount),
-                    borderColor: 'rgb(75, 192, 192)',
-                    tension: 0.1
-                }]
-            },
-            options: {
-                responsive: true,
-                scales: {
-                    y: {
-                        beginAtZero: true
-                    }
-                }
-            }
-        });
+        // var chart = new Chart(ctx, {
+        //     type: 'line',
+        //     data: {
+        //         labels: salesData.map(item => item.date),
+        //         datasets: [{
+        //             label: 'Sales',
+        //             data: salesData.map(item => item.amount),
+        //             borderColor: 'rgb(75, 192, 192)',
+        //             tension: 0.1
+        //         }]
+        //     },
+        //     options: {
+        //         responsive: true,
+        //         scales: {
+        //             y: {
+        //                 beginAtZero: true
+        //             }
+        //         }
+        //     }
+        // });
 
         function confirmOrder(orderId) {
             if (confirm('Are you sure you want to confirm this order?')) {
-                fetch('/admin/orders/' + orderId + '/confirm', { method: 'POST' })
+                const token = document.querySelector('meta[name="_csrf"]').content;
+                const header = document.querySelector('meta[name="_csrf_header"]').content;
+
+                fetch('/admin/orders/' + orderId + '/confirm', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        [header]: token
+                    }
+                })
                     .then(response => response.json())
                     .then(data => {
                         if (data.success) {
                             location.reload();
                         } else {
-                            alert('Failed to confirm order');
+                            alert('Failed to confirm order: ' + (data.message || 'Unknown error'));
                         }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('An error occurred while confirming the order');
                     });
             }
         }

@@ -116,6 +116,9 @@ public class ProductService {
                 .collect(Collectors.toList());
     }
 
+    public List<Product> getRecentlyAddedProducts() {
+        return productRepository.findTop5ByOrderByCreatedAtDesc();
+    }
 
 
 }

@@ -3,7 +3,7 @@
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security5"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout}">
 <head>
-    <title th:text="${title} ?: 'Products List'">Products List</title>
+    <title>Homepage</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
@@ -109,9 +109,9 @@
     <div class="swiper" style="background: linear-gradient(to right, #fbc2eb, #a6c0fe);">
         <div class="swiper-wrapper !border-t-2 relative">
             <div class="swiper-slide !bg-gradient-to-r from-pink-100 via-blue-50 to-white"
-                 th:each="product : ${products}">
-                <span class="line-clamp-1 overflow-hidden" th:text="${product.description}">Description</span>
-                <img th:src="${product.image}" alt="Product Image" class="block relative">
+                 th:each="product , iterStat : ${products}" th:if="${iterStat.index < 4}">
+                <span class="line-clamp-2 overflow-ellipsis w-60 h-60 mb-20 mr-10 text-left" style="height: 250px;" th:text="${product.description}">Description</span>
+                <img th:src="${product.image}" alt="Product Image" class="block relative" style="width: 348px;height: 432px" >
             </div>
         </div>
         <!-- Pagination -->
@@ -135,7 +135,7 @@
             </div>
             <div class="!flex !justify-center !w-full !space-x-6 mt-6">
                 <div class="">
-                    <a href="#" class="!flex !flex-col !items-center"><img th:src="@{/img/trinhtham.jpg}" alt="User Icon" class="rounded-3xl w-80 h-40 object-cover">
+                    <a href="/products?category=trinh%20th%C3%A1m" class="!flex !flex-col !items-center"><img th:src="@{/img/trinhtham.jpg}" alt="User Icon" class="rounded-3xl w-80 h-40 object-cover">
 
                         <span class="!text-2xl !text-red-400">Trinh Thám</span>
                     </a></div>
@@ -164,7 +164,7 @@
                 <h2 class="text-3xl font-bold text-blue-600 mt-2">New Release Books</h2>
             </div>
             <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
-                <div th:each="product, iterStat : ${products}" th:if="${iterStat.index < 4}">
+                <div th:each="product, iterStat : ${newProducts}" th:if="${iterStat.index < 4}">
                     <div class="book-card">
                         <div class="relative bg-white rounded-lg shadow-md overflow-hidden transition-all duration-300 hover:shadow-xl group">
                             <div class="relative group">
@@ -224,7 +224,7 @@
                                     <p class="text-gray-400 uppercase mb-6" th:text="${product.name}">BY AUTHOR NAME</p>
                                     <p class="text-gray-500 mb-10 overflow-ellipsis line-clamp-2 max-w-[210px]" th:text="${product.description}">Book description here.</p>
                                     <p class="text-2xl font-bold text-red-500 mb-12" th:text="${@priceFormatter.formatPrice(product.price)} + ' VND'"></p>
-                                    <button class="bg-white text-indigo-700 py-2 px-4 rounded-md inline-flex items-center border border-indigo-900">
+                                    <button onclick="viewMore()" class="bg-white text-indigo-700 py-2 px-4 rounded-md inline-flex items-center border border-indigo-900">
                                         VIEW MORE
                                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
@@ -254,23 +254,22 @@
         <div><p class="text-xl p-8">Top Sellers</p></div>
         <div class="container mx-auto px-4">
             <div class="top-seller-swiper relative">
-                <div class="swiper-wrapper" >
-                    <div class="swiper-slide" th:each="product : ${products}">
-                        <div class="slide-content">
+                <div class="swiper-wrapper">
+                    <div class="swiper-slide" th:each="product, iterStat : ${top5}">
+                        <div class="slide-content" th:if="${iterStat.count <= 10}">
                             <div class="image-content">
-                                <img th:src="${product.image}" alt="Product Image">                            </div>
+                                <img th:src="${product.image}" alt="Product Image">
+                            </div>
                             <div class="text-content">
                                 <h2 class="book-title line-clamp-1" th:text="${product.name}">Title</h2>
-                                <p class="book-description overflow-ellipsis line-clamp-2"
-                                th:text="${product.description}"
-                                >
-                                </p>
+                                <p class="book-description overflow-ellipsis line-clamp-2" th:text="${product.description}"></p>
                                 <div class="price-container w-full">
                                     <span class="current-price !w-full" th:text="${@priceFormatter.formatPrice(product.price)} + ' VND'"></span>
                                 </div>
                                 <button class="add-to-basket text-center mt-10">
-                                    <span class="cart-icon "><svg width="22" height="24" viewBox="0 0 22 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                        <path d="M1 1.5H3.22222L3.66667 3.83333M5.44444 13.1667H16.5556L21 3.83333H3.66667M5.44444 13.1667L3.66667 3.83333M5.44444 13.1667L2.89679 15.8417C2.19682 16.5767 2.69257 17.8333 3.68246 17.8333H16.5556M16.5556 17.8333C15.3283 17.8333 14.3333 18.878 14.3333 20.1667C14.3333 21.4553 15.3283 22.5 16.5556 22.5C17.7829 22.5 18.7778 21.4553 18.7778 20.1667C18.7778 18.878 17.7829 17.8333 16.5556 17.8333ZM7.66667 20.1667C7.66667 21.4553 6.67174 22.5 5.44444 22.5C4.21715 22.5 3.22222 21.4553 3.22222 20.1667C3.22222 18.878 4.21715 17.8333 5.44444 17.8333C6.67174 17.8333 7.66667 18.878 7.66667 20.1667Z" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                    <span class="cart-icon">
+                                        <svg width="22" height="24" viewBox="0 0 22 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M1 1.5H3.22222L3.66667 3.83333M5.44444 13.1667H16.5556L21 3.83333H3.66667M5.44444 13.1667L3.66667 3.83333M5.44444 13.1667L2.89679 15.8417C2.19682 16.5767 2.69257 17.8333 3.68246 17.8333H16.5556M16.5556 17.8333C15.3283 17.8333 14.3333 18.878 14.3333 20.1667C14.3333 21.4553 15.3283 22.5 16.5556 22.5C17.7829 22.5 18.7778 21.4553 18.7778 20.1667C18.7778 18.878 17.7829 17.8333 16.5556 17.8333ZM7.66667 20.1667C7.66667 21.4553 6.67174 22.5 5.44444 22.5C4.21715 22.5 3.22222 21.4553 3.22222 20.1667C3.22222 18.878 4.21715 17.8333 5.44444 17.8333C6.67174 17.8333 7.66667 18.878 7.66667 20.1667Z" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
                                         </svg>
                                     </span>
                                     <p class="text-white">Add to basket</p>
@@ -290,7 +289,6 @@
                             <path d="M8.0875 22.2273L5.97275 20.1125L14.0852 12L5.97275 3.8875L8.0875 1.77275L18.3148 12L8.0875 22.2273Z" fill="#1C1B1F"/>
                         </g>
                     </svg>
-
                 </div>
                 <!-- <div class="top-seller-pagination"></div> -->
             </div>
@@ -373,6 +371,10 @@
                 }
             });
         }
+        function viewMore(){
+            window.location.href = `/products`
+        }
+
 
     </script>
 </section>

@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import java.util.List;
 
 @Controller
-@RequestMapping("/home")
+@RequestMapping()
 public class HomeController {
     @Autowired
     private ProductService productService;
@@ -23,7 +23,7 @@ public class HomeController {
     private CategoryService categoryService;
 
 
-    @GetMapping
+    @GetMapping("/home")
     public String showProducts(@RequestParam(required = false) String sortBy,
                                @RequestParam(required = false) Double minPrice,
                                @RequestParam(required = false) Double maxPrice,
@@ -44,18 +44,30 @@ public class HomeController {
             productPage = productService.getProductsByCategory(category, PageRequest.of(page, size));
         }
         else {
-            productPage = productService.getAllProducts(PageRequest.of(page, size));
+            productPage = (sortBy != null)
+                    ? productService.getAllProductsSorted(sortBy, PageRequest.of(page, size))
+                    : productService.getAllProducts(PageRequest.of(page, size));
         }
         model.addAttribute("products", productPage.getContent());
         model.addAttribute("currentPage", productPage.getNumber());
         model.addAttribute("totalPages", productPage.getTotalPages());
         model.addAttribute("totalItems", productPage.getTotalElements());
 
+        model.addAttribute("newProducts", productService.getRecentlyAddedProducts());
+
+        model.addAttribute("top5",productService.getTopSellerProducts());
         model.addAttribute("authors",authors);
         model.addAttribute("selectedAuthor", author);
         model.addAttribute("categories", categoryService.getAllCategories());
         model.addAttribute("selectedCategory", category);
+        model.addAttribute("sortBy", sortBy);
 
         return "/products/products-list";
+    }
+
+    @GetMapping("/about-us")
+    public String aboutUs(Model model) {
+        model.addAttribute("title", "About Us");
+        return "/about-us";
     }
 }

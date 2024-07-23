@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<head>
+    <title th:text="${title} ?: 'Chỉnh sửa đơn hàng'">Chỉnh sửa đơn hàng</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100">
+<section layout:fragment="content" class="container mx-auto mt-10 px-4">
+    <h1 class="text-3xl font-bold mb-6">Chỉnh sửa đơn hàng</h1>
+    <form th:action="@{/admin/orders/update}" method="post" class="bg-white p-6 rounded-lg shadow-md">
+        <!-- Hidden input for order ID -->
+        <input type="hidden" name="id" th:value="${order.id}">
+
+        <!-- Customer Name -->
+        <div class="mb-4">
+            <label for="customerName" class="block text-sm font-medium text-gray-700">Tên khách hàng:</label>
+            <input type="text" id="customerName" name="customerName" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                   th:value="${order.customerName}" required>
+        </div>
+
+        <!-- Customer Address -->
+        <div class="mb-4">
+            <label for="customerAddress" class="block text-sm font-medium text-gray-700">Địa chỉ giao hàng:</label>
+            <input type="text" id="customerAddress" name="customerAddress" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                   th:value="${order.customerAddress}" required>
+        </div>
+
+        <!-- Customer Phone Number -->
+        <div class="mb-4">
+            <label for="customerPhoneNumber" class="block text-sm font-medium text-gray-700">Số điện thoại:</label>
+            <input type="text" id="customerPhoneNumber" name="customerPhoneNumber" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                   th:value="${order.customerPhoneNumber}" required>
+        </div>
+
+        <!-- Customer Email -->
+        <div class="mb-4">
+            <label for="customerEmail" class="block text-sm font-medium text-gray-700">Email:</label>
+            <input type="email" id="customerEmail" name="customerEmail" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                   th:value="${order.customerEmail}" required>
+        </div>
+
+        <!-- Customer Note -->
+        <div class="mb-4">
+            <label for="customerNote" class="block text-sm font-medium text-gray-700">Ghi chú:</label>
+            <input type="text" id="customerNote" name="customerNote" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                   th:value="${order.customerNote}">
+        </div>
+
+        <div class="mb-4">
+            <label class="block text-sm font-medium text-gray-700">Phương thức thanh toán:</label>
+            <div class="flex items-center mt-2">
+                <input type="radio" id="paymentCOD" name="paymentMethod" value="COD" class="mr-2" th:checked="${order.customerPayment == 'COD'}">
+                <label for="paymentCOD" class="text-sm text-gray-700">Thanh toán khi nhận hàng (COD)</label>
+            </div>
+            <div class="flex items-center mt-2">
+                <input type="radio" id="paymentBank" name="paymentMethod" value="Bank" class="mr-2" th:checked="${order.customerPayment == 'Bank'}">
+                <label for="paymentBank" class="text-sm text-gray-700">Chuyển khoản ngân hàng</label>
+            </div>
+        </div>
+
+        <!-- Submit Button -->
+        <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600">Cập nhật đơn hàng</button>
+    </form>
+</section>
+</body>
+</html>
