@@ -62,7 +62,7 @@ public class HomeController {
         model.addAttribute("selectedCategory", category);
         model.addAttribute("sortBy", sortBy);
 
-        return "/products/products-list";
+        return "/home";
     }
 
     @GetMapping("/about-us")

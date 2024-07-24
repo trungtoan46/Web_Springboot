@@ -57,7 +57,7 @@ public class HelloController{
         model.addAttribute("selectedCategory", category);
         model.addAttribute("sortBy", sortBy);
 
-        return "/products/products-list";
+        return "/home";
     }
 
 
