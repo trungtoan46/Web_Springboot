@@ -75,7 +75,9 @@ public class SecurityConfig {
                 )
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/css/**", "/js/**", "/","/**", "/oauth/**", "/register",
-                                "/error", "/products", "/cart/**", "/cart/**","/api/**","/p","/img/**","/login","/home")
+                                "/error", "/products", "/cart/**", "/cart/**","/api/**","/p","/img/**","/login"
+                                ,"/products/edit/**","/admin/users/update"
+                                ,"/home")
                         .permitAll()
                         .requestMatchers("/products/add", "/products/delete")
                         .hasAnyAuthority("ADMIN")

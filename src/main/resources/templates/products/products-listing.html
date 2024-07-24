@@ -88,7 +88,20 @@
         </div>
     </div>
     <!-- End Navigation -->
+    <div class="container">
+        <div class="flex justify-center my-10 ">
+            <form th:action="@{/products}" method="get" class="mb-4 border-blue-500 border-2 rounded-[8px]">
+                <div class="flex ">
+                    <input type="text" name="keyword" th:value="${keyword}" placeholder="Search products..."
+                           class="form-input px-4 py-2 rounded-l-md">
+                    <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-r-md hover:bg-blue-600">
+                        Search
+                    </button>
+                </div>
+            </form>
+        </div>
 
+    </div>
     <!-- Container -->
     <div class="container mx-auto bg-white p-6">
         <div class="flex flex-col md:flex-row justify-between gap-8">
@@ -96,7 +109,7 @@
             <!-- Filter Section -->
             <div class="filter w-full md:w-1/4">
                 <div class="mb-6">
-                    <div class="flex justify-between items-center mb-2">
+                    <div class="flex justify-between items-center mb-2 ">
                         <h3 class="font-bold text-lg">Giá tiền</h3>
                         <button class="text-xl focus:outline-none" onclick="toggleFilter('priceFilter')">+</button>
                     </div>

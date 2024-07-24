@@ -110,4 +110,10 @@ public class ProductService {
     public List<Product> getRecentlyAddedProducts() {
         return productRepository.findTop5ByOrderByCreatedAtDesc();
     }
+
+    public Page<Product> searchProducts(String keyword, Pageable pageable) {
+        return productRepository.findByNameContainingIgnoreCase(keyword, pageable);
+    }
+
+
 }

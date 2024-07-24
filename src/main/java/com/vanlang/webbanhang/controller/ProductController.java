@@ -39,12 +39,15 @@ public class ProductController {
                        @RequestParam(required = false) String category,
                        @RequestParam(required = false) String author,
                        @RequestParam(required = false) Double minPrice,
-                       @RequestParam(required = false) Double maxPrice) {
+                       @RequestParam(required = false) Double maxPrice,
+                       @RequestParam(required = false) String keyword) {
 
         Pageable pageable = PageRequest.of(page, size);
         Page<Product> productPage;
 
-        if (category != null && !category.isEmpty()) {
+        if (keyword != null && !keyword.isEmpty()) {
+            productPage = productService.searchProducts(keyword, pageable);
+        } else if (category != null && !category.isEmpty()) {
             productPage = productService.getProductsByCategory(category, pageable);
         } else if (author != null && !author.isEmpty()) {
             productPage = productService.getProductsByAuthor(author, pageable);
@@ -68,6 +71,7 @@ public class ProductController {
         model.addAttribute("author", author);
         model.addAttribute("minPrice", minPrice);
         model.addAttribute("maxPrice", maxPrice);
+        model.addAttribute("keyword", keyword);
 
         return "products/products-listing";
     }
@@ -96,8 +100,9 @@ public class ProductController {
         productService.addProduct(product);
         return "redirect:/products";
     }
-    // For editing a product
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+
+
+
     @GetMapping("/edit/{id}")
     public String showEditForm(@PathVariable("id") Long id, Model model) {
         logger.info("Attempting to show edit form for product with id: {}", id);

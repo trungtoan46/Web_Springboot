@@ -29,5 +29,5 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     List<Product> findTop5ByOrderByCreatedAtDesc();
 
 
-
+    Page<Product> findByNameContainingIgnoreCase(String keyword, Pageable pageable);
 }
