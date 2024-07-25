@@ -265,7 +265,7 @@
         function sortProducts(sortBy) {
             var currentUrl = new URL(window.location.href);
             currentUrl.searchParams.set('sortBy', sortBy);
-            currentUrl.searchParams.set('page', 0); // Reset to first page when sorting
+            currentUrl.searchParams.set('page', 0);
             window.location.href = currentUrl.toString();
         }
 

@@ -36,6 +36,13 @@
                 <p><strong>Role:</strong>
                     <span th:text="${not #lists.isEmpty(user.roles) ? user.roles[0].name : 'N/A'}"></span>
                 </p>
+
+                <!-- Logout button -->
+                <form th:action="@{/logout}" method="post" class="mt-4">
+                    <button type="submit" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded">
+                        Logout
+                    </button>
+                </form>
             </div>
 
             <div>
@@ -67,7 +74,7 @@
         </div>
     </div>
 
-    <!-- New orders section -->
+    <!-- Orders section -->
     <div class="bg-white shadow-md rounded-lg overflow-hidden p-6 mt-6">
         <h2 class="text-xl font-semibold mb-4">Your Orders</h2>
         <div th:if="${#lists.isEmpty(orders)}" class="text-gray-500">

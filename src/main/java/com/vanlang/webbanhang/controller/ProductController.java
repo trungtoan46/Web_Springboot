@@ -85,7 +85,7 @@ public class ProductController {
     @GetMapping("/add")
     public String showAddForm(Model model) {
         model.addAttribute("product", new Product());
-        model.addAttribute("categories",categoryService.getAllCategories());// Load categories
+        model.addAttribute("categories",categoryService.getAllCategories());
         return "/products/add-product";
     }
 
