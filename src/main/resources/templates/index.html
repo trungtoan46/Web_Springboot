@@ -267,7 +267,7 @@
                                 <div class="price-container w-full">
                                     <span class="current-price !w-full" th:text="${@priceFormatter.formatPrice(product.price)} + ' VND'"></span>
                                 </div>
-                                <button class="add-to-basket text-center mt-10 add-to-cart"
+                                <button class="add-to-basket text-center mt-10  add-to-cart"
                                         th:data-product-id="${product.id}" data-quantity="1"
                                 >
                                     <span class="cart-icon">
@@ -345,6 +345,9 @@
                 prevEl: '.top-seller-button-prev',
             },
         });
+
+
+
         function saveProduct() {
             const formData = new FormData();
             formData.append('id', $('#productId').val());
