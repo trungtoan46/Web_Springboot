@@ -22,6 +22,12 @@ Use a better box model (opinionated).
 Use a more readable tab size (opinionated).
 */
 
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
 html {
   -moz-tab-size: 4;
   -o-tab-size: 4;
@@ -6693,7 +6699,7 @@ video {
   width: 5rem;
 }
 
-.w-24 {
+.w-28w-24 {
   width: 6rem;
 }
 

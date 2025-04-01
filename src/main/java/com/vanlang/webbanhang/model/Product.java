@@ -3,6 +3,8 @@ package com.vanlang.webbanhang.model;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDateTime;
+
 @Setter
 @Getter
 @RequiredArgsConstructor
@@ -15,12 +17,35 @@ public class Product {
     private Long id;
     private String name;
     private double price;
+    @Column(columnDefinition = "TEXT")
     private String description;
 
     @ManyToOne
     @JoinColumn(name = "category_id")
     private Category category;
+    @Column
     private String image;
+
+
+    @Column(name = "created_at")
+    private LocalDateTime createdAt;
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
+    }
+
     private String author;
 
     public String getAuthor() {
@@ -32,13 +57,7 @@ public class Product {
     }
 
 
-    public String getImage() {
-        return image;
-    }
 
-    public void setImage(String image) {
-        this.image = image;
-    }
 
 
     public Long getId() {

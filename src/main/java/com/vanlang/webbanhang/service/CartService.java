@@ -34,7 +34,7 @@ public class CartService {
         cartItems.removeIf(cartItem -> cartItem.getProduct().getId().equals(productId));
     }
 
-    public void clearCard() {
+    public void clearCart() {
         cartItems.clear();
     }
 }

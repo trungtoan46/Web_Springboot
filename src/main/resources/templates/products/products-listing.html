@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security5"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout}">
+<head>
+    <title th:text="${title} ?: 'Products List'">Products List</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" th:href="@{/swiper/swiper-bundle.min.css}">
+    <link rel="stylesheet" th:href="@{/css/swiper.css}">
+    <link rel="stylesheet" th:href="@{/css/output.css}">
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+</head>
+
+<body>
+<section layout:fragment="content">
+    <style>
+        .pagination {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .pagination a {
+            color: black;
+            float: left;
+            padding: 8px 16px;
+            text-decoration: none;
+            transition: background-color .3s;
+            border: 1px solid #ddd;
+            margin: 0 4px;
+        }
+
+        .pagination a.active {
+            background-color: #4CAF50;
+            color: white;
+            border: 1px solid #4CAF50;
+        }
+
+        .pagination a:hover:not(.active) {
+            background-color: #ddd;
+        }
+
+        .alert-message-success {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 10px 20px;
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+            border-radius: 4px;
+            display: none;
+            z-index: 1000;
+            cursor: pointer;
+        }
+
+        .alert-message-error {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 10px 20px;
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+            border-radius: 4px;
+            display: none;
+            z-index: 1000;
+            cursor: pointer;
+        }
+    </style>
+
+    <div id="alert-message-success" class="alert-message-success" role="alert" onclick="hideMessage()"></div>
+    <div id="alert-message-error" class="alert-message-error" role="alert" onclick="hideMessage()"></div>
+
+    <!-- Navigation -->
+    <div class="container">
+        <div class="bg-gradient-to-r from-[#FFE5E5] to-[#F5FFFE] h-24 w-full flex items-center justify-center">
+            <div class="flex justify-items-center space-x-0.5">
+                <a th:href="@{/home}">HOME/</a>
+                <a th:href="@{/products}">PRODUCTS</a>
+            </div>
+        </div>
+    </div>
+    <!-- End Navigation -->
+    <div class="container">
+        <div class="flex justify-center my-10 ">
+            <form th:action="@{/products}" method="get" class="mb-4 border-blue-500 border-2 rounded-[8px]">
+                <div class="flex ">
+                    <input type="text" name="keyword" th:value="${keyword}" placeholder="Search products..."
+                           class="form-input px-4 py-2 rounded-l-md">
+                    <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-r-md hover:bg-blue-600">
+                        Search
+                    </button>
+                </div>
+            </form>
+        </div>
+
+    </div>
+    <!-- Container -->
+    <div class="container mx-auto bg-white p-6">
+        <div class="flex flex-col md:flex-row justify-between gap-8">
+            <!-- Filter Section -->
+            <!-- Filter Section -->
+            <div class="filter w-full md:w-1/4">
+                <div class="mb-6">
+                    <div class="flex justify-between items-center mb-2 ">
+                        <h3 class="font-bold text-lg">Giá tiền</h3>
+                        <button class="text-xl focus:outline-none" onclick="toggleFilter('priceFilter')">+</button>
+                    </div>
+                    <div id="priceFilter" style="display: none;">
+                        <form id="priceRangeForm" th:action="@{/products}" method="get">
+                            <div class="flex items-center gap-2">
+                                <input type="number" id="minPrice" name="minPrice" th:value="${minPrice}" class="w-24 border-2 p-2 rounded" placeholder="1000">
+                                <span>tới</span>
+                                <input type="number" id="maxPrice" name="maxPrice" th:value="${maxPrice}" class="w-24 border-2 p-2 rounded" placeholder="100000">
+                                <span>VND</span>
+                            </div>
+                            <button type="submit" class="w-full bg-blue-900 text-white text-base mt-2 p-2 rounded font-bold hover:bg-blue-800 transition-colors">Lọc</button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Author Filter -->
+                <div class="mb-6">
+                    <div class="flex justify-between items-center mb-2">
+                        <h3 class="font-bold text-lg">Tác giả</h3>
+                        <button class="text-xl focus:outline-none" onclick="toggleFilter('authorFilter')">+</button>
+                    </div>
+                    <div id="authorFilter" style="display: none;">
+                        <form th:action="@{/products}" method="get">
+                            <select name="author" id="authors" class="w-full p-2 border rounded" onchange="this.form.submit()">
+                                <option value="" selected>Chọn một tác giả</option>
+                                <option th:each="author : ${authors}" th:value="${author}" th:text="${author}" th:selected="${author == param.author}"></option>
+                            </select>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Category Filter -->
+                <div class="mb-6">
+                    <div class="flex justify-between items-center mb-2">
+                        <h3 class="font-bold text-lg">Thể loại</h3>
+                        <button class="text-xl focus:outline-none" onclick="toggleFilter('categoryFilter')">+</button>
+                    </div>
+                    <div id="categoryFilter" style="display: none;">
+                        <form th:action="@{/products}" method="get">
+                            <select name="category" id="category" class="w-full p-2 border rounded" onchange="this.form.submit()">
+                                <option value="" selected>Chọn một thể loại</option>
+                                <option th:each="category : ${categories}" th:value="${category.name}" th:text="${category.name}" th:selected="${category.name == param.category}"></option>
+                            </select>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <!-- Products Display Section -->
+            <div class="w-full md:w-3/4">
+                <div class="flex justify-between items-center mb-10">
+                    <div class="sorting text-[#393280] font-bold">
+                        <div>
+                            <select name="sorting" id="sorting" class="w-full p-2 mx-2" onchange="sortProducts(this.value)">
+                                <option value="" disabled selected>Sắp xếp bởi:</option>
+                                <option value="nameAsc" th:selected="${sortBy == 'nameAsc'}">Bảng chữ cái (A-Z)</option>
+                                <option value="nameDesc" th:selected="${sortBy == 'nameDesc'}">Bảng chữ cái (Z-A)</option>
+                                <option value="priceAsc" th:selected="${sortBy == 'priceAsc'}">Giá tiền từ thấp đến cao</option>
+                                <option value="priceDesc" th:selected="${sortBy == 'priceDesc'}">Giá tiền từ cao đến thấp</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="showing text-[#393280] font-bold">
+                        <div>
+                            <span th:text="'Hiển thị ' + ${size} + ' trên tổng ' + ${totalProducts} + ' sản phẩm'"></span>
+                        </div>
+                    </div>
+                    <div class="show text-[#393280] font-bold">
+                        <form th:action="@{/products}" method="get">
+                            <label for="size" class="mr-2">Select Size:</label>
+                            <select id="size" name="size" class=""
+                                    th:value="${size}" onchange="this.form.submit()">
+                                <option value="9" th:selected="${size} == 9">9</option>
+                                <option value="12" th:selected="${size} == 12">12</option>
+                                <option value="15" th:selected="${size} == 15">15</option>
+                                <option value="18" th:selected="${size} == 18">18</option>
+                            </select>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <div th:each="product: ${products}" class="book-card">
+                        <div class="relative bg-white rounded-lg shadow-md overflow-hidden transition-all duration-300 hover:shadow-xl group">
+                            <a th:href="@{/products/id/{id}(id=${product.id})}" class="block">
+                                <div class="h-64 overflow-hidden">
+                                    <img th:src="${product.image}" th:alt="${product.description}" class="w-full h-full object-contain transition-transform duration-300 group-hover:scale-105">
+                                </div>
+                            </a>
+                            <div class="absolute inset-0 flex items-end justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 product-detail-link" th:data-product-id="${product.id}">                                <div class="text-center w-full p-4 bg-[#ED553B] bg-opacity-90">
+                                    <a href="#" class="block py-2 text-white no-underline text-center font-bold hover:bg-opacity-100 transition-colors add-to-cart"
+                                       th:data-product-id="${product.id}" data-quantity="1"
+                                    >ADD TO CART</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="p-4 text-center">
+                            <a th:href="@{/products/id/{id}(id=${product.id})}" class="block">
+                                <h3 class="text-lg font-semibold text-blue-700 hover:text-blue-800 transition-colors overflow-hidden duration-300 h-20" th:text="${product.name}">Book Title</h3>
+                            </a>
+                            <p class="text-sm text-gray-500 mt-2" th:text="${product.author != '' ? product.author : 'Unknown'}">Author</p>
+                            <p class="text-lg text-red-500 font-bold mt-2" th:text="${@priceFormatter.formatPrice(product.price)} + ' VND'">Giá tiền</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="pagination flex justify-center mt-5 mb-10 mr-10 float-right">
+                    <span th:if="${currentPage > 0}">
+                        <a class="text-black p-4 border mx-2 rounded transition-colors duration-300 hover:bg-gray-200"
+                           th:href="@{/products(page=${currentPage - 1}, size=${size}, sortBy=${sortBy})}"
+                           aria-label="Previous page">
+                            Previous
+                        </a>
+                    </span>
+                                    <span th:each="i : ${#numbers.sequence(0, totalPages - 1)}">
+                        <a th:href="@{/products(page=${i}, size=${size}, sortBy=${sortBy})}" th:text="${i + 1}"
+                           th:class="${currentPage == i ? 'bg-green-500 text-white border-green-500' : ''}"
+                           class="text-black p-4 border mx-2 rounded transition-colors duration-300 hover:bg-gray-200 "
+                           aria-label="Page ${i + 1}">
+                        </a>
+                    </span>
+                                    <span th:if="${currentPage < totalPages - 1}">
+                        <a class="text-black p-4 border mx-2 rounded transition-colors duration-300 hover:bg-gray-200"
+                           th:href="@{/products(page=${currentPage + 1}, size=${size}, sortBy=${sortBy})}"
+                           aria-label="Next page">
+                            Next
+                        </a>
+                    </span>
+                </div>
+<!--                -->
+            </div>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        function loadAuthors() {
+            $.ajax({
+                url: '/api/products/authors',
+                type: 'GET',
+                success: function (authors) {
+                    let authorOptions = '<option value="" disabled selected>Chọn một tác giả</option>';
+                    $.each(authors, function (index, author) {
+                        authorOptions += `<option value="${author}">${author}</option>`;
+                    });
+                    $('#authors').html(authorOptions);
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error loading authors:', error);
+                }
+            });
+        }
+
+        function sortProducts(sortBy) {
+            var currentUrl = new URL(window.location.href);
+            currentUrl.searchParams.set('sortBy', sortBy);
+            currentUrl.searchParams.set('page', 0);
+            window.location.href = currentUrl.toString();
+        }
+
+        function filterByPrice() {
+            var minPrice = document.getElementById('minPrice').value;
+            var maxPrice = document.getElementById('maxPrice').value;
+            if (minPrice && maxPrice) {
+                window.location.href = '/products?minPrice=' + minPrice + '&maxPrice=' + maxPrice;
+                return false;
+            }
+            return true;
+        }
+
+        function filterByCategory(category) {
+            if (category) {
+                window.location.href = `/products?category=${encodeURIComponent(category)}`;
+            } else {
+                window.location.href = '/products';
+            }
+        }
+
+        function filterByAuthor(author) {
+            if (author) {
+                window.location.href = `/products?author=${encodeURIComponent(author)}`;
+            } else {
+                window.location.href = '/products';
+            }
+        }
+
+        $(document).ready(function () {
+            loadAuthors();
+        });
+
+        $(document).ready(function() {
+            var token = $("meta[name='_csrf']").attr("content");
+            var header = $("meta[name='_csrf_header']").attr("content");
+
+            // Tạo mã để gửi yêu cầu
+            $.ajaxSetup({
+                beforeSend: function(xhr) {
+                    xhr.setRequestHeader(header, token);
+                }
+            });
+
+            // Thêm sản phẩm vào giỏ hàng
+            $('.add-to-cart').on('click', function(event) {
+                event.preventDefault();
+
+                var productId = $(this).data('product-id');
+                var quantity = $(this).data('quantity');
+
+                $.ajax({
+                    url: '/cart/add',
+                    type: 'POST',
+                    data: {
+                        productId: productId,
+                        quantity: quantity
+                    },
+                    success: function(response) {
+                        updateCart(response.cartItems);
+                        showMessageSuccess(response.message);
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Error adding to cart:', error);
+                        showMessageError('Đã xảy ra lỗi khi thêm sản phẩm vào giỏ hàng. Vui lòng thử lại.');
+                    }
+                });
+            });
+
+            // Xóa sản phẩm khỏi giỏ hàng
+            $(document).on('click', '.remove-from-cart', function(event) {
+                event.preventDefault();
+
+                var productId = $(this).data('product-id');
+
+                $.ajax({
+                    url: '/cart/remove/' + productId,
+                    type: 'GET',
+                    success: function(response) {
+                        updateCart(response.cartItems);
+                        showMessageSuccess(response.message);
+                    },
+                    error: function() {
+                        showMessageError('Đã xảy ra lỗi khi xóa sản phẩm khỏi giỏ hàng.');
+                    }
+                });
+            });
+
+            // Làm mới nội dung giỏ hàng
+            function updateCart(cartItems) {
+                var cartHtml = '';
+                var totalItems = 0;
+
+                cartItems.forEach(function(item) {
+                    cartHtml += '<div>' + item.productName + ' - ' + item.quantity + '</div>';
+                    totalItems += item.quantity;
+                });
+                $('#cart-items').html(cartHtml);
+                $('#cart-total').text(totalItems);
+            }
+
+
+            $(document).on('click', '.product-detail-link', function(event) {
+                event.preventDefault();
+                var productId = $(this).data('product-id');
+                window.location.href = `/products/id/${productId}`;
+            });
+        });
+
+        function showMessageSuccess(message) {
+            $('#alert-message-success').text(message).show();
+            setTimeout(function() {
+                $('#alert-message-success').fadeOut();
+            }, 3000);
+        }
+
+        function showMessageError(message) {
+            $('#alert-message-error').text(message).show();
+            setTimeout(function() {
+                $('#alert-message-error').fadeOut();
+            }, 3000);
+        }
+
+        function hideMessage() {
+            $('#alert-message-error').fadeOut();
+            $('#alert-message-success').fadeOut();
+        }
+        function toggleFilter(filterId) {
+            var filter = document.getElementById(filterId);
+            if (filter.style.display === "none") {
+                filter.style.display = "block";
+            } else {
+                filter.style.display = "none";
+            }
+        }
+
+
+
+    </script>
+</section>
+</body>
+</html>

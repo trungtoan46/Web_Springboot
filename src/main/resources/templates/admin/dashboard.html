@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security5"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+
+    <title>DashBoard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+</head>
+<body class="bg-gray-100">
+<section layout:fragment="content" class="container mx-auto px-4 py-8">
+    <div class="flex h-screen" sec:authorize="hasRole('ROLE_ADMIN')">
+    <!-- Sidebar -->
+        <div class="w-64 bg-white shadow-md">
+            <div class="p-4">
+                <h2 class="text-xl font-bold">Dashboard</h2>
+            </div>
+            <nav>
+                <a href="/admin/users" class="flex items-center p-4 hover:bg-purple-100">
+                    <span class="ml-4">Users</span>
+                </a>
+                <a href="/categories" class="flex items-center p-4 hover:bg-purple-100">
+                    <span class="ml-4">Categories</span>
+                </a>
+                <a href="/admin/products" class="flex items-center p-4 hover:bg-purple-100">
+                    <span class="ml-4">Products</span>
+                </a>
+                <a href="/admin/orders" class="flex items-center p-4 hover:bg-purple-100">
+                    <span class="ml-4">Orders</span>
+                </a>
+            </nav>
+
+    </div>
+
+    <!-- Main content -->
+    <div class="flex-1 overflow-y-auto">
+        <header class="bg-white shadow-sm p-4">
+            <div class="flex justify-between items-center">
+                <h1 class="text-2xl font-semibold">User Management Dashboard</h1>
+                <div class="relative">
+                    <input type="text" placeholder="Search" class="pl-10 pr-4 py-2 rounded-full border">
+                </div>
+            </div>
+        </header>
+
+        <main class="p-6">
+            <div class="grid grid-cols-4 gap-6 mb-6">
+                <div class="bg-white p-4 rounded-lg shadow">
+                    <h3 class="text-gray-500">Total Users</h3>
+                    <p class="text-2xl font-bold" th:text="${users.size()}">0</p>
+                </div>
+                <div class="bg-white p-4 rounded-lg shadow">
+                    <h3 class="text-gray-500">Total Categories</h3>
+                    <p class="text-2xl font-bold" th:text="${categories.size()}">0</p>
+                </div>
+                <div class="bg-white p-4 rounded-lg shadow">
+                    <h3 class="text-gray-500">Total Products</h3>
+                    <p class="text-2xl font-bold" th:text="${products.size()}">0</p>
+                </div>
+                <div class="bg-white p-4 rounded-lg shadow">
+                    <h3 class="text-gray-500">Total Orders</h3>
+                    <p class="text-2xl font-bold" th:text="${orders.size()}">0</p>
+                </div>
+            </div>
+
+            <!-- Sales Statistics -->
+
+            <div class="bg-white rounded-lg shadow mb-6">
+                <div class="p-4 border-b">
+                    <h2 class="text-xl font-semibold">Sales Statistics</h2>
+                </div>
+                <div class="p-4">
+                    <canvas id="salesChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Recent Orders -->
+            <div class="bg-white rounded-lg shadow">
+                <div class="p-4 border-b">
+                    <h2 class="text-xl font-semibold">Recent Orders</h2>
+                </div>
+                <table class="w-full">
+                    <thead>
+                    <tr class="bg-gray-50">
+                        <th class="p-2 text-left">Order ID</th>
+                        <th class="p-2 text-left">Customer</th>
+                        <th class="p-2 text-left">Total</th>
+                        <th class="p-2 text-left">Date</th>
+                        <th class="p-2 text-left">Status</th>
+                        <th class="p-2 text-left">Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="order : ${recentOrders}" class="border-t">
+                        <td class="p-2" th:text="${order.id}"></td>
+                        <td class="p-2" th:text="${order.customerName}"></td>
+                            <td class="p-2" th:text="${#numbers.formatDecimal(order.total, 0, 'COMMA', 2, 'POINT')}"></td>
+                        <td class="p-2" th:text="${#temporals.format(order.orderDate, 'dd-MM-yyyy HH:mm')}"></td>
+                        <td class="p-2" th:text="${order.status}"></td>
+                        <td class="p-2">
+                            <button th:if="${order.status == 'PENDING'}"
+                                    th:onclick="'confirmOrder(' + ${order.id} + ')'"
+                                    class="bg-green-500 text-white px-2 py-1 rounded">
+                                Confirm
+                            </button>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+    </div>
+    </div>
+
+    <div sec:authorize="!hasRole('ROLE_ADMIN')" class="text-center py-10">
+        <h2 class="text-2xl font-bold text-red-600">Access Denied</h2>
+        <p class="mt-2 text-gray-600">You do not have permission to view this page.</p>
+        <a href="/login" class="mt-4 inline-block bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Return to Home</a>
+    </div>
+
+
+
+    <script th:inline="javascript">
+        var salesData = /*[[${salesData}]]*/ [];
+
+        var ctx = document.getElementById('salesChart').getContext('2d');
+        var chart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: salesData.map(item => item.date),
+                datasets: [{
+                    label: 'Monthly Sales',
+                    data: salesData.map(item => item.amount),
+                    borderColor: 'rgb(75, 192, 192)',
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    tension: 0.1
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Sales Amount'
+                        }
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Month'
+                        }
+                    }
+                }
+            }
+        });
+
+
+    function confirmOrder(orderId) {
+    if (confirm('Are you sure you want to confirm this order?')) {
+    const token = document.querySelector('meta[name="_csrf"]').content;
+    const header = document.querySelector('meta[name="_csrf_header"]').content;
+
+    fetch('/admin/orders/' + orderId + '/confirm', {
+    method: 'POST',
+    headers: {
+    'Content-Type': 'application/json',
+    [header]: token
+    }
+    })
+    .then(response => response.json())
+    .then(data => {
+    if (data.success) {
+    location.reload();
+    } else {
+    alert('Failed to confirm order: ' + (data.message || 'Unknown error'));
+    }
+    })
+    .catch(error => {
+    console.error('Error:', error);
+    alert('An error occurred while confirming the order');
+                    });
+            }
+        }
+    </script>
+</section>
+</body>
+</html>

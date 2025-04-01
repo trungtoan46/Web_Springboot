@@ -2,10 +2,15 @@ package com.vanlang.webbanhang.service;
 
 
 import com.vanlang.webbanhang.model.Category;
+import com.vanlang.webbanhang.model.Product;
 import com.vanlang.webbanhang.repository.CategoryRepository;
 import jakarta.transaction.Transactional;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import org.hibernate.Internal;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -20,6 +25,10 @@ public class CategoryService {
     public List<Category> getAllCategories() {
         return categoryRepository.findAll();
     }
+    public List<String> getAllCategoryNames() {
+        return categoryRepository.findAllCategoryNames();
+    }
+
     public Optional<Category> getCategoryById(Long id) {
         return categoryRepository.findById(id);
     }
@@ -42,7 +51,7 @@ public class CategoryService {
     }
 
 
-
-
-
+    public long getTotalCategoryCount() {
+        return categoryRepository.count();
+    }
 }

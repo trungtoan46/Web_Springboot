@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout}">
+<head>
+    <title>User Details</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+</head>
+<body class="bg-gray-100">
+<section layout:fragment="content" class="container mx-auto px-4 py-8">
+    <h1 class="text-3xl font-bold mb-6">User Details</h1>
+    <div class="bg-white shadow-md rounded-lg overflow-hidden">
+        <div class="px-6 py-4">
+            <h2 class="text-lg font-bold mb-2">User ID: <span th:text="${user.id}"></span></h2>
+            <p><strong>Username:</strong> <span th:text="${user.username}"></span></p>
+            <p><strong>Email:</strong> <span th:text="${user.email}"></span></p>
+            <p><strong>Phone:</strong> <span th:text="${user.phone}"></span></p>
+            <p><strong>Provider:</strong> <span th:text="${user.provider}"></span></p>
+            <p><strong>Roles:</strong> <span th:text="${#strings.arrayJoin(user.roles, ', ')}"></span></p>
+        </div>
+        <div class="px-6 py-4 border-t border-gray-200">
+            <a th:href="@{/admin/users}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                Back to Users
+            </a>
+        </div>
+    </div>
+</section>
+</body>
+</html>
