@@ -24,9 +24,12 @@ public class ProductService {
         return productRepository.findById(id);
     }
 
+<<<<<<< HEAD
     public List<ProductService> getProductByName(String name) {
         return productRepository.findByName(name);
     }
+=======
+>>>>>>> 81a5cd279517c02933006cfd240d40a51ea715dc
 
     // Add a new product to the database
     public Product addProduct(Product product) {
